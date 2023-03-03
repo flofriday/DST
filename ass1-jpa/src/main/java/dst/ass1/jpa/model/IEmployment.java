@@ -1,7 +1,6 @@
 package dst.ass1.jpa.model;
 
 import java.util.Date;
-
 public interface IEmployment {
 
     IEmploymentKey getId();

@@ -1,13 +1,7 @@
 # DST
-My solution for DST(Distributed System Technologies) Spring Semester 2023 at TU Wien.
+My solution for DST(Distributed System Technologies) Spring Semester 2023 at [TU Wien](https://www.tuwien.at/en/).
 
-Distributed Systems Technologies
-================================
-
-Please find details about the template in the assignment document.
-
-Build
------
+## Build
 
 Each Maven module has a corresponding profile that contains the build config for the respective module.
 For example, to build the JPA task of assignment 1, run

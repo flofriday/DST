@@ -4,18 +4,19 @@ import dst.ass1.jpa.model.IPlatformUser;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
 /*
  * Three Inheritance patterns
  *
- * 1) Abstract Entities (selected
- * 2)
- * 3)
+ * 1) Abstract Entities         ... can not be instatiated but normally queried (like a own table).
+ * 2) Mapped Supperclass        ... liked mapped entities "inlined" into extending subtype.
+ * 3) Non-Entity Superclasses   ... their members are not persistent.
  *
  */
 
-@Entity
+@MappedSuperclass
 public abstract class PlatformUser implements IPlatformUser {
     @Id
     private Long id;

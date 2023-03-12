@@ -1,14 +1,16 @@
 package dst.ass1.jpa.model.impl;
 
-import dst.ass1.jpa.model.ITrip;
-import dst.ass1.jpa.model.TripState;
+import dst.ass1.jpa.model.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
 @Entity
 public class Trip implements ITrip {
+    // FIXME: Must this file be defined in XML or are they taking about something else?
+    // FIXME: Bad Implementation
     @Id
     private Long id;
 
@@ -26,8 +28,14 @@ public class Trip implements ITrip {
     @ManyToMany
     private Collection<Location> stops;
 
+    @OneToOne(mappedBy = "trip", cascade = CascadeType.ALL)
+    private TripInfo tripInfo;
+
     @ManyToOne()
     private Rider rider;
+
+    @OneToOne(mappedBy = "trip")
+    private Match match;
 
     @Override
     public Long getId() {
@@ -75,8 +83,8 @@ public class Trip implements ITrip {
     }
 
     @Override
-    public void setPickup(Location pickup) {
-        this.pickup = pickup;
+    public void setPickup(ILocation pickup) {
+        this.pickup = (Location) pickup;
     }
 
     @Override
@@ -85,17 +93,56 @@ public class Trip implements ITrip {
     }
 
     @Override
-    public void setDestination(Location destination) {
-        this.destination = destination;
+    public void setDestination(ILocation destination) {
+        this.destination = (Location) destination;
     }
 
     @Override
-    public Collection<Location> getStops() {
-        return stops;
+    public Collection<ILocation> getStops() {
+        return new ArrayList<ILocation>(stops);
     }
 
     @Override
-    public void setStops(Collection<Location> stops) {
-        this.stops = stops;
+    public void setStops(Collection<ILocation> stops) {
+        this.stops.clear();
+        for (var stop : stops) {
+            addStop(stop);
+        }
     }
+
+    @Override
+    public void addStop(ILocation stop) {
+        stops.add((Location) stop);
+    }
+
+    @Override
+    public ITripInfo getTripInfo() {
+        return tripInfo;
+    }
+
+    @Override
+    public void setTripInfo(ITripInfo tripInfo) {
+        this.tripInfo = (TripInfo) tripInfo;
+    }
+
+    @Override
+    public IMatch getMatch() {
+        return match;
+    }
+
+    @Override
+    public void setMatch(IMatch match) {
+        this.match = (Match) match;
+    }
+
+    @Override
+    public IRider getRider() {
+        return rider;
+    }
+
+    @Override
+    public void setRider(IRider rider) {
+        this.rider = (Rider) rider;
+    }
+
 }

@@ -2,9 +2,7 @@ package dst.ass1.jpa.model.impl;
 
 import dst.ass1.jpa.model.IPlatformUser;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 /*
@@ -19,11 +17,13 @@ import javax.validation.constraints.NotNull;
 @MappedSuperclass
 public abstract class PlatformUser implements IPlatformUser {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
     @NotNull
+    @Column(nullable = false)
     private String tel;
 
     private Double avgRating;

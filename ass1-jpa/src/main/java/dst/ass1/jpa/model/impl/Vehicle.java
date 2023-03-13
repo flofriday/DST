@@ -2,18 +2,17 @@ package dst.ass1.jpa.model.impl;
 
 import dst.ass1.jpa.model.IVehicle;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 
 @Entity
 public class Vehicle implements IVehicle {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
-    private String license; // FIXME: Is this the correct way to make it unique?
+    private String license;
 
     private String color;
     private String type;

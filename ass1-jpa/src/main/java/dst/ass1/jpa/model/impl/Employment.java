@@ -3,20 +3,21 @@ package dst.ass1.jpa.model.impl;
 import dst.ass1.jpa.model.IEmployment;
 import dst.ass1.jpa.model.IEmploymentKey;
 
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import java.util.Date;
 
 @Entity
 public class Employment implements IEmployment {
 
-    // FIXME: The Key here
-    @Id
-    private IEmploymentKey id;
+    @EmbeddedId
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private EmploymentKey id;
 
     private Date since;
     private boolean active;
-
 
     @Override
     public IEmploymentKey getId() {
@@ -25,7 +26,7 @@ public class Employment implements IEmployment {
 
     @Override
     public void setId(IEmploymentKey id) {
-        this.id = id;
+        this.id = (EmploymentKey) id;
     }
 
     @Override

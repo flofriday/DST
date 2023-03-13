@@ -10,8 +10,8 @@ import java.util.Date;
 @Entity
 public class Trip implements ITrip {
     // FIXME: Must this file be defined in XML or are they taking about something else?
-    // FIXME: Bad Implementation
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Date created;
@@ -19,14 +19,14 @@ public class Trip implements ITrip {
 
     private TripState state;
 
-    @OneToOne
+    @ManyToOne(optional = false)
     private Location pickup;
 
-    @OneToOne
+    @ManyToOne(optional = false)
     private Location destination;
 
     @ManyToMany
-    private Collection<Location> stops;
+    private Collection<Location> stops = new ArrayList<>();
 
     @OneToOne(mappedBy = "trip", cascade = CascadeType.ALL)
     private TripInfo tripInfo;

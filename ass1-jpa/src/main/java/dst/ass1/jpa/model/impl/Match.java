@@ -2,32 +2,26 @@ package dst.ass1.jpa.model.impl;
 
 import dst.ass1.jpa.model.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 public class Match implements IMatch {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Date date;
     private Money fare;
 
-    @OneToOne
-    @NotNull
+    @OneToOne(optional = false)
     private Trip trip;
 
-    @ManyToOne
-    @NotNull
+    @ManyToOne(optional = false)
     private Driver driver;
 
-    @ManyToOne
-    @NotNull
-    private Vehicle car;
+    @ManyToOne(optional = false)
+    private Vehicle vehicle;
 
 
     @Override
@@ -72,12 +66,12 @@ public class Match implements IMatch {
 
     @Override
     public IVehicle getVehicle() {
-        return car;
+        return vehicle;
     }
 
     @Override
     public void setVehicle(IVehicle vehicle) {
-        this.car = (Vehicle) car;
+        this.vehicle = (Vehicle) vehicle;
     }
 
     @Override

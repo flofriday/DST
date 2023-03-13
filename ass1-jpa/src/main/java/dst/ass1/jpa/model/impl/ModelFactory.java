@@ -9,73 +9,62 @@ public class ModelFactory implements IModelFactory {
 
     @Override
     public IModelFactory createModelFactory() {
-        // TODO
-        return null;
+        // FIXME: or singleton?
+        return new ModelFactory();
     }
 
     @Override
     public IDriver createDriver() {
-        // TODO
-        return null;
+        return new Driver();
     }
 
     @Override
     public IEmployment createEmployment() {
-        // TODO
-        return null;
+        return new Employment();
     }
 
     @Override
     public IEmploymentKey createEmploymentKey() {
-        // TODO
-        return null;
+        return new EmploymentKey();
     }
 
     @Override
     public ILocation createLocation() {
-        // TODO
-        return null;
+        return new Location();
     }
 
     @Override
     public IMatch createMatch() {
-        // TODO
-        return null;
+        return new Match();
     }
 
     @Override
     public IMoney createMoney() {
-        // TODO
-        return null;
+        return new Money();
     }
 
     @Override
     public IOrganization createOrganization() {
-        // TODO
-        return null;
+        return new Organization();
     }
 
     @Override
     public IRider createRider() {
-        // TODO
-        return null;
+        return new Rider();
     }
 
     @Override
     public ITrip createTrip() {
-        // TODO
-        return null;
+        return new Trip();
     }
 
     @Override
     public ITripInfo createTripInfo() {
-        // TODO
-        return null;
+        return new TripInfo();
     }
 
     @Override
     public IVehicle createVehicle() {
-        // TODO
-        return null;
+        return new Vehicle();
     }
 }

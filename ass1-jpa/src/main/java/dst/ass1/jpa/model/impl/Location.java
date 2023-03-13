@@ -3,12 +3,15 @@ package dst.ass1.jpa.model.impl;
 import dst.ass1.jpa.model.ILocation;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
 public class Location implements ILocation {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private Long locationId;

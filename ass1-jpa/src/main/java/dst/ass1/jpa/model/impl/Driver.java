@@ -13,11 +13,10 @@ import java.util.Collection;
 @Entity
 public class Driver extends PlatformUser implements IDriver {
 
-    // FIXME: Make bidirectional
-    @OneToMany
-    private Collection<Employment> employments;
+    @OneToMany(mappedBy = "id.driver")
+    private Collection<Employment> employments = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Vehicle vehicle;
 
     @Override

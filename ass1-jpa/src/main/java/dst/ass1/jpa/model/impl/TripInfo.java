@@ -4,15 +4,14 @@ import dst.ass1.jpa.model.IMoney;
 import dst.ass1.jpa.model.ITrip;
 import dst.ass1.jpa.model.ITripInfo;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
 public class TripInfo implements ITripInfo {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Date completed;
@@ -21,7 +20,7 @@ public class TripInfo implements ITripInfo {
     private int driverRating;
     private int riderRating;
 
-    @OneToOne
+    @OneToOne(optional = false)
     @NotNull
     private Trip trip;
 

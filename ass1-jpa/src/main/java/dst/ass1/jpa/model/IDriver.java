@@ -1,5 +1,6 @@
 package dst.ass1.jpa.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public interface IDriver extends IPlatformUser {

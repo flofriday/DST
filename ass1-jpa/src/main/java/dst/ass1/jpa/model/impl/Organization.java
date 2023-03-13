@@ -4,31 +4,36 @@ import dst.ass1.jpa.model.IEmployment;
 import dst.ass1.jpa.model.IOrganization;
 import dst.ass1.jpa.model.IVehicle;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import static dst.ass1.jpa.util.Constants.*;
 
 @Entity
 public class Organization implements IOrganization {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    @OneToMany
-    private Collection<Employment> employments;
+    @OneToMany(mappedBy = "id.organization")
+    private Collection<Employment> employments = new ArrayList<>();
 
     @ManyToMany
-    private Collection<Vehicle> vehicles;
+    private Collection<Vehicle> vehicles = new ArrayList<>();
 
     // FIXME: Is this correct?
-    @ManyToMany(mappedBy = "parts")
-    private Collection<Organization> partOf;
     @ManyToMany
-    private Collection<Organization> parts;
+    @JoinTable(
+            name = J_ORGANIZATION_PARTS,
+            joinColumns = @JoinColumn(name = I_ORGANIZATION_PART_OF),
+            inverseJoinColumns = @JoinColumn(name = I_ORGANIZATION_PARTS)
+    )
+    private Collection<Organization> parts = new ArrayList<>();
+    @ManyToMany(mappedBy = "parts")
+    private Collection<Organization> partOf = new ArrayList<>();
 
     @Override
     public Long getId() {

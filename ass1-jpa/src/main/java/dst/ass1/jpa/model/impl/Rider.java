@@ -3,24 +3,28 @@ package dst.ass1.jpa.model.impl;
 import dst.ass1.jpa.model.IRider;
 import dst.ass1.jpa.model.ITrip;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 
 @Entity
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"accountNo", "bankCode"})})
 public class Rider extends PlatformUser implements IRider {
 
     @NotNull
+    @Column(unique = true, nullable = false)
     private String email;
 
+    // Note: SHA1 hashes have a length of 20 bytes
+    @Column(length = 20)
     private byte[] password;
+
     private String accountNo;
     private String bankCode;
 
     @OneToMany
-    private Collection<Trip> trips;
+    private Collection<Trip> trips = new ArrayList<>();
 
     @Override
     public String getEmail() {
@@ -69,7 +73,6 @@ public class Rider extends PlatformUser implements IRider {
 
     @Override
     public void setTrips(Collection<ITrip> trips) {
-        // FIXME: That feels soooo hacky
         this.trips.clear();
         for (var trip : trips) {
             addTrip(trip);

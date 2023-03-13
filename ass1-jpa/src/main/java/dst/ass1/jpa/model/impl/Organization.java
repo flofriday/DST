@@ -28,8 +28,8 @@ public class Organization implements IOrganization {
     @ManyToMany
     @JoinTable(
             name = J_ORGANIZATION_PARTS,
-            joinColumns = @JoinColumn(name = I_ORGANIZATION_PART_OF),
-            inverseJoinColumns = @JoinColumn(name = I_ORGANIZATION_PARTS)
+            joinColumns = @JoinColumn(name = I_ORGANIZATION_PARTS),
+            inverseJoinColumns = @JoinColumn(name = I_ORGANIZATION_PART_OF)
     )
     private Collection<Organization> parts = new ArrayList<>();
     @ManyToMany(mappedBy = "parts")

@@ -5,6 +5,7 @@ import dst.ass1.jpa.model.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public class Trip implements ITrip {
     private Long id;
@@ -102,7 +103,7 @@ public class Trip implements ITrip {
     }
 
     @Override
-    public ITripInfo getTripInfo() {
+    public TripInfo getTripInfo() {
         return tripInfo;
     }
 
@@ -112,7 +113,7 @@ public class Trip implements ITrip {
     }
 
     @Override
-    public IMatch getMatch() {
+    public Match getMatch() {
         return match;
     }
 
@@ -122,7 +123,7 @@ public class Trip implements ITrip {
     }
 
     @Override
-    public IRider getRider() {
+    public Rider getRider() {
         return rider;
     }
 

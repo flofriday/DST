@@ -35,8 +35,19 @@ public class RiderDAO implements IRiderDAO {
 
     @Override
     public List<IRider> findRidersByCurrencyValueAndCurrency(BigDecimal currencyValue, String currency) {
-        // FIXME: Implement
-        return null;
+        /**
+         *  === Note on implementation ===
+         *  Yes, I could have done the filtering in Java here, but I decided against it as a best practise. Because:
+         *  - RDBS often have many cores or machines available and can scale such filtering with sofisticated algorithms
+         *  - Even if the the raw performance is the same we would need to send a lot of data over the network which is
+         *    always slower than making the calculations close to the source
+         *
+         *  Filtering the currency here would be way more complex and a lot more network trafic.
+         */
+        return new ArrayList<>(em.createNamedQuery("riderBySpentAndCurrency", Rider.class)
+                .setParameter("currency", currency)
+                .setParameter("currencyValue", currencyValue)
+                .getResultList());
     }
 
     @Override

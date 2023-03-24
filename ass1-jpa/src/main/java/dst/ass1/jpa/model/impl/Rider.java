@@ -14,6 +14,13 @@ import java.util.Collection;
         name = "riderByEmail",
         query = "SELECT r FROM Rider r WHERE r.email = :email"
 )
+@NamedQuery(
+        name = "riderBySpentAndCurrency",
+        query = "SELECT r FROM Rider r JOIN r.trips t JOIN t.tripInfo i " +
+                "WHERE i.total.currency = :currency " +
+                "GROUP BY r " +
+                "HAVING SUM(i.total.currencyValue) > :currencyValue"
+)
 public class Rider extends PlatformUser implements IRider {
 
     @NotNull

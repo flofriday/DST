@@ -32,7 +32,10 @@ public class MatchDAO implements IMatchDAO {
 
     @Override
     public long countMatchesByDate(Date date) {
-        // FIXME: Implement
-        return 0;
+        return em.createNamedQuery("countMatchOnDate", Long.class)
+                .setParameter("date", date)
+                .getResultStream()
+                .findFirst()
+                .orElse(0L);
     }
 }

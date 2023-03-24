@@ -3,6 +3,7 @@ package dst.ass1.jpa.dao.impl;
 import dst.ass1.jpa.dao.IOrganizationDAO;
 import dst.ass1.jpa.model.IDriver;
 import dst.ass1.jpa.model.IOrganization;
+import dst.ass1.jpa.model.impl.Driver;
 import dst.ass1.jpa.model.impl.Organization;
 
 import javax.persistence.EntityManager;
@@ -31,7 +32,10 @@ public class OrganizationDAO implements IOrganizationDAO {
 
     @Override
     public IDriver findTopAndActiveDriverByOrganization(long organizationId) {
-        // FIXME: Implement
-        return null;
+        return em.createNamedQuery("activeInMultipleOrganizationsDrivers", Driver.class)
+                .setParameter("organizationId", organizationId)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
     }
 }

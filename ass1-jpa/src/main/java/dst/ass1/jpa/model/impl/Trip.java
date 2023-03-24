@@ -2,39 +2,25 @@ package dst.ass1.jpa.model.impl;
 
 import dst.ass1.jpa.model.*;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-@Entity
 public class Trip implements ITrip {
-    // FIXME: Must this file be defined in XML or are they taking about something else?
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Date created;
     private Date updated;
-
     private TripState state;
-
-    @ManyToOne(optional = false)
     private Location pickup;
-
-    @ManyToOne(optional = false)
     private Location destination;
 
-    @ManyToMany
     private Collection<Location> stops = new ArrayList<>();
 
-    @OneToOne(mappedBy = "trip", cascade = CascadeType.ALL)
     private TripInfo tripInfo;
 
-    @ManyToOne()
     private Rider rider;
 
-    @OneToOne(mappedBy = "trip")
     private Match match;
 
     @Override

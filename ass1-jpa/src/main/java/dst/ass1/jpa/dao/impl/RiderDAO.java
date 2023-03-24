@@ -5,6 +5,8 @@ import dst.ass1.jpa.model.IRider;
 import dst.ass1.jpa.model.impl.Rider;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NamedQuery;
+import javax.persistence.Query;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,7 +47,10 @@ public class RiderDAO implements IRiderDAO {
 
     @Override
     public IRider findByEmail(String email) {
-        // FIXME: Implement
-        return null;
+        return em.createNamedQuery("riderByEmail", Rider.class)
+                .setParameter("email", email)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
     }
 }

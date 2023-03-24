@@ -6,6 +6,10 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@NamedQuery(
+        name = "countMatchOnDate",
+        query = "SELECT COUNT(m) FROM Match m WHERE m.date = :date"
+)
 public class Match implements IMatch {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

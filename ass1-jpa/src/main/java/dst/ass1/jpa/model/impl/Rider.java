@@ -10,6 +10,10 @@ import java.util.Collection;
 
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"accountNo", "bankCode"})})
+@NamedQuery(
+        name = "riderByEmail",
+        query = "SELECT r FROM Rider r WHERE r.email = :email"
+)
 public class Rider extends PlatformUser implements IRider {
 
     @NotNull

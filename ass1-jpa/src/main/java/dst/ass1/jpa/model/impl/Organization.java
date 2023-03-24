@@ -24,7 +24,6 @@ public class Organization implements IOrganization {
     @ManyToMany
     private Collection<Vehicle> vehicles = new ArrayList<>();
 
-    // FIXME: Is this correct?
     @ManyToMany
     @JoinTable(
             name = J_ORGANIZATION_PARTS,

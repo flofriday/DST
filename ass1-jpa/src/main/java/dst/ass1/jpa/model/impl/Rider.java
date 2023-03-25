@@ -34,7 +34,7 @@ public class Rider extends PlatformUser implements IRider {
     private String accountNo;
     private String bankCode;
 
-    @OneToMany
+    @OneToMany(mappedBy = "rider")
     private Collection<Trip> trips = new ArrayList<>();
 
     @Override

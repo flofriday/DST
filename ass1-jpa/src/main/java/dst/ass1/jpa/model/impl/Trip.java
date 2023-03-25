@@ -85,11 +85,17 @@ public class Trip implements ITrip {
 
     @Override
     public Collection<ILocation> getStops() {
+        if (this.stops == null) return null;
         return new ArrayList<ILocation>(stops);
     }
 
     @Override
     public void setStops(Collection<ILocation> stops) {
+        if (stops == null) {
+            this.stops = null;
+            return;
+        }
+
         this.stops.clear();
         for (var stop : stops) {
             addStop(stop);

@@ -2,11 +2,12 @@ package dst.ass1.jpa.dao.impl;
 
 import dst.ass1.jpa.dao.IRiderDAO;
 import dst.ass1.jpa.model.IRider;
+import dst.ass1.jpa.model.TripState;
 import dst.ass1.jpa.model.impl.Rider;
+import dst.ass1.jpa.model.impl.Trip;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NamedQuery;
-import javax.persistence.Query;
+import javax.persistence.criteria.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,8 +53,28 @@ public class RiderDAO implements IRiderDAO {
 
     @Override
     public List<IRider> findTopThreeRidersWithMostCanceledTripsAndRatingLowerEqualTwo(Date start, Date end) {
-        // FIXME: Implement
-        return null;
+        var cb = em.getCriteriaBuilder();
+        var cq = cb.createQuery(Rider.class);
+        Root<Rider> rider = cq.from(Rider.class);
+        Join<Rider, Trip> trip = rider.join("trips");
+
+        List<Predicate> conditions = new ArrayList<>();
+        conditions.add(cb.le(rider.get("avgRating"), 2.0));
+        conditions.add(cb.equal(trip.get("state"), TripState.CANCELLED));
+        if (start != null) {
+            conditions.add(cb.greaterThanOrEqualTo(trip.get("created"), start));
+        }
+        if (end != null) {
+            conditions.add(cb.lessThanOrEqualTo(trip.get("created"), end));
+        }
+
+        cq.select(rider)
+                .where(
+                        conditions.toArray(Predicate[]::new)
+                ).groupBy(rider)
+                .orderBy(cb.desc(cb.count(trip)));
+
+        return new ArrayList<>(em.createQuery(cq).setMaxResults(3).getResultList());
     }
 
     @Override

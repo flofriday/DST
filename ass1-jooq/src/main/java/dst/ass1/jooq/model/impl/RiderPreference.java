@@ -8,6 +8,7 @@ import org.jooq.DSLContext;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static dst.ass1.jooq.model.public_.Tables.PREFERENCE;
 
@@ -46,5 +47,19 @@ public class RiderPreference extends dst.ass1.jooq.model.public_.tables.pojos.Ri
     @Override
     public void setPreferences(Map<String, String> preferences) {
         this.preferences = preferences;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        RiderPreference that = (RiderPreference) o;
+        return Objects.equals(preferences, that.preferences);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), preferences);
     }
 }

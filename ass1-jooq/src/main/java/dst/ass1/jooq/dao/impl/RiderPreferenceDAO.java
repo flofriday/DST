@@ -28,6 +28,18 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
     public IRiderPreference findById(Long id) {
         var dsl = getConnection();
 
+        //  Get the rider preference
+        var record = dsl.select().from(RIDER_PREFERENCE)
+                .where(RIDER_PREFERENCE.RIDER_ID.eq(id))
+                .fetchOne();
+
+        if (record == null) return null;
+
+        RiderPreference riderPreference = new RiderPreference();
+        riderPreference.setRiderId(id);
+        riderPreference.setArea(record.get(RIDER_PREFERENCE.AREA));
+        riderPreference.setVehicleClass(record.get(RIDER_PREFERENCE.VEHICLE_CLASS));
+
         // First get the keys and values
         var result = dsl
                 .select()
@@ -41,16 +53,6 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
             String value = r.get(PREFERENCE.PREF_VALUE);
             preferences.put(key, value);
         }
-
-        //  Get the rider preference
-        var record = dsl.select().from(RIDER_PREFERENCE)
-                .where(RIDER_PREFERENCE.RIDER_ID.eq(id))
-                .fetchOne();
-
-        RiderPreference riderPreference = new RiderPreference();
-        riderPreference.setRiderId(id);
-        riderPreference.setArea(record.get(RIDER_PREFERENCE.AREA));
-        riderPreference.setVehicleClass(record.get(RIDER_PREFERENCE.VEHICLE_CLASS));
         riderPreference.setPreferences(preferences);
 
         return riderPreference;
@@ -64,9 +66,8 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
 
     @Override
     public IRiderPreference insert(IRiderPreference model) {
-        var dsl = getConnection();
 
-        dsl.transaction((Configuration trx) -> {
+        getConnection().transaction((Configuration trx) -> {
             // Insert the Rider
             trx.dsl().insertInto(RIDER_PREFERENCE)
                     .set(RIDER_PREFERENCE.RIDER_ID, model.getRiderId())
@@ -82,20 +83,24 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
             query.execute();
         });
 
-
-        // FIXME: What do they want here?
         return model;
     }
 
     @Override
     public void delete(Long id) {
-        // FIXME: Implement
+        getConnection().transaction((Configuration trx) -> {
+            trx.dsl().deleteFrom(PREFERENCE)
+                    .where(PREFERENCE.RIDER_ID.eq(id))
+                    .execute();
 
+            trx.dsl().deleteFrom(RIDER_PREFERENCE)
+                    .where(RIDER_PREFERENCE.RIDER_ID.eq(id))
+                    .execute();
+        });
     }
 
     @Override
     public void updatePreferences(IRiderPreference model) {
         // FIXME: Implement
-
     }
 }

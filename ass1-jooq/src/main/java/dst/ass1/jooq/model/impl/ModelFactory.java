@@ -5,8 +5,8 @@ import dst.ass1.jooq.model.IRiderPreference;
 
 public class ModelFactory implements IModelFactory {
 
-  @Override
-  public IRiderPreference createRiderPreference() {
-    return null;
-  }
+    @Override
+    public IRiderPreference createRiderPreference() {
+        return new RiderPreference();
+    }
 }

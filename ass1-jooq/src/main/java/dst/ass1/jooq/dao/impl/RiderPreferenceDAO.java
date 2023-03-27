@@ -133,6 +133,17 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
 
     @Override
     public void updatePreferences(IRiderPreference model) {
-        // FIXME: Implement
+        getConnection().batched(trx -> {
+            for (var e : model.getPreferences().entrySet()) {
+                trx.dsl().insertInto(PREFERENCE)
+                        .set(PREFERENCE.RIDER_ID, model.getRiderId())
+                        .set(PREFERENCE.PREF_VALUE, e.getValue())
+                        .set(PREFERENCE.PREF_KEY, e.getKey())
+                        .onDuplicateKeyUpdate()
+                        .set(PREFERENCE.PREF_VALUE, e.getValue())
+                        .execute();
+
+            }
+        });
     }
 }

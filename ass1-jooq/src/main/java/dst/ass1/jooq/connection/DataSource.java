@@ -11,32 +11,33 @@ import org.jooq.impl.DefaultConfiguration;
 import java.sql.SQLException;
 
 public class DataSource {
-  private DataSource() {
-  }
+    private DataSource() {
+    }
 
-  private static final DSLContext dslContext;
+    private static final DSLContext dslContext;
 
-  static {
-    var hikariConfig = new HikariConfig();
-    hikariConfig.setJdbcUrl("jdbc:h2:~/tmp/database/dst");
-    var hikariDataSource = new HikariDataSource(hikariConfig);
-    var dslConfig = new DefaultConfiguration();
-    var setting = new Settings().withExecuteWithOptimisticLocking(true);
-    dslConfig.set(hikariDataSource);
-    dslConfig.set(SQLDialect.H2);
-    dslConfig.set(setting);
+    static {
+        var hikariConfig = new HikariConfig();
+        hikariConfig.setJdbcUrl("jdbc:h2:/tmp/database/dst");
+        var hikariDataSource = new HikariDataSource(hikariConfig);
+        var dslConfig = new DefaultConfiguration();
+        var setting = new Settings().withExecuteWithOptimisticLocking(true);
+        dslConfig.set(hikariDataSource);
+        dslConfig.set(SQLDialect.H2);
+        dslConfig.set(setting);
 
-    dslContext = DSL.using(dslConfig);
+        dslContext = DSL.using(dslConfig);
 
-  }
+    }
 
 
-  /**
-   * This will return a dsl context which you can use to execute sql statements
-   * via jooq
-   * @return a dsl context
-   */
-  public static DSLContext getConnection() throws SQLException {
-    return dslContext;
-  }
+    /**
+     * This will return a dsl context which you can use to execute sql statements
+     * via jooq
+     *
+     * @return a dsl context
+     */
+    public static DSLContext getConnection() throws SQLException {
+        return dslContext;
+    }
 }

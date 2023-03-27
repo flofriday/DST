@@ -1,46 +1,50 @@
 package dst.ass1.jooq.model.impl;
 
-import dst.ass1.jooq.connection.DataSource;
 import dst.ass1.jooq.model.IRiderPreference;
-import dst.ass1.jooq.model.public_.tables.Preference;
-import org.jooq.DSLContext;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static dst.ass1.jooq.model.public_.Tables.PREFERENCE;
+public class RiderPreference implements IRiderPreference {
 
-public class RiderPreference extends dst.ass1.jooq.model.public_.tables.pojos.RiderPreference implements IRiderPreference {
+    private Long riderId;
+    private String vehicleClass;
+    private String area;
     private Map<String, String> preferences = new HashMap<>();
 
     @Override
+    public Long getRiderId() {
+        return riderId;
+    }
+
+    @Override
+    public void setRiderId(Long riderId) {
+        this.riderId = riderId;
+    }
+
+    @Override
+    public String getVehicleClass() {
+        return vehicleClass;
+    }
+
+    @Override
+    public void setVehicleClass(String vehicleClass) {
+        this.vehicleClass = vehicleClass;
+    }
+
+    @Override
+    public String getArea() {
+        return area;
+    }
+
+    @Override
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    @Override
     public Map<String, String> getPreferences() {
-        /*
-        DSLContext context;
-        try {
-            context = DataSource.getConnection();
-        } catch (SQLException e) {
-            return null;
-        }
-
-        var result = context
-                .select()
-                .from(PREFERENCE)
-                .where(PREFERENCE.RIDER_ID.eq(this.getRiderId()))
-                .fetch();
-
-        Map<String, String> map = new HashMap<>();
-        for (var r : result) {
-            String key = r.get(PREFERENCE.PREF_KEY);
-            String value = r.get(PREFERENCE.PREF_VALUE);
-            map.put(key, value);
-        }
-
-        return map;
-         */
-
         return preferences;
     }
 
@@ -53,13 +57,21 @@ public class RiderPreference extends dst.ass1.jooq.model.public_.tables.pojos.Ri
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+
         RiderPreference that = (RiderPreference) o;
+
+        if (!riderId.equals(that.riderId)) return false;
+        if (!Objects.equals(vehicleClass, that.vehicleClass)) return false;
+        if (!Objects.equals(area, that.area)) return false;
         return Objects.equals(preferences, that.preferences);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), preferences);
+        int result = riderId.hashCode();
+        result = 31 * result + (vehicleClass != null ? vehicleClass.hashCode() : 0);
+        result = 31 * result + (area != null ? area.hashCode() : 0);
+        result = 31 * result + (preferences != null ? preferences.hashCode() : 0);
+        return result;
     }
 }

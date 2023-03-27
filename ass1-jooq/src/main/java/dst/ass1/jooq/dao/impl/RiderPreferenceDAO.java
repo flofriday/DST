@@ -8,6 +8,7 @@ import org.jooq.Configuration;
 import org.jooq.DSLContext;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,8 +61,39 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
 
     @Override
     public List<IRiderPreference> findAll() {
-        // FIXME: Implement
-        return null;
+        var dsl = getConnection();
+
+        var records = dsl.select()
+                .from(RIDER_PREFERENCE
+                        .leftJoin(PREFERENCE)
+                        .on(PREFERENCE.RIDER_ID.eq(RIDER_PREFERENCE.RIDER_ID)))
+                .fetch();
+
+        Map<Long, RiderPreference> map = new HashMap<>();
+        for (var record : records) {
+            Long riderId = record.get(RIDER_PREFERENCE.RIDER_ID);
+            if (!map.containsKey(riderId)) {
+                var riderPreference = new RiderPreference();
+                riderPreference.setRiderId(riderId);
+                riderPreference.setArea(record.get(RIDER_PREFERENCE.AREA));
+                riderPreference.setVehicleClass(record.get(RIDER_PREFERENCE.VEHICLE_CLASS));
+                map.put(riderId, riderPreference);
+            }
+
+            // Guard to ignore null values
+            if (record.get(PREFERENCE.PREF_KEY) == null) continue;
+
+            var riderPreference = map.get(riderId);
+            if (riderPreference.getPreferences() == null)
+                riderPreference.setPreferences(new HashMap<>());
+
+            riderPreference.getPreferences().put(
+                    record.get(PREFERENCE.PREF_KEY),
+                    record.get(PREFERENCE.PREF_VALUE)
+            );
+        }
+
+        return new ArrayList<>(map.values());
     }
 
     @Override

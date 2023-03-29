@@ -30,7 +30,8 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
         var dsl = getConnection();
 
         //  Get the rider preference
-        var record = dsl.select().from(RIDER_PREFERENCE)
+        var record = dsl.select()
+                .from(RIDER_PREFERENCE)
                 .where(RIDER_PREFERENCE.RIDER_ID.eq(id))
                 .fetchOne();
 
@@ -41,7 +42,7 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
         riderPreference.setArea(record.get(RIDER_PREFERENCE.AREA));
         riderPreference.setVehicleClass(record.get(RIDER_PREFERENCE.VEHICLE_CLASS));
 
-        // First get the keys and values
+        // Now get all related preferences
         var result = dsl
                 .select()
                 .from(PREFERENCE)
@@ -107,8 +108,19 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
                     .set(RIDER_PREFERENCE.VEHICLE_CLASS, model.getVehicleClass())
                     .execute();
 
-            // Insert all Preferences
-            var query = trx.dsl().batch(trx.dsl().insertInto(PREFERENCE, PREFERENCE.RIDER_ID, PREFERENCE.PREF_KEY, PREFERENCE.PREF_VALUE).values((Long) null, (String) null, (String) null));
+            // Insert all Preferences, by first defining the insert query and later binding all preferences to it.
+            var query = trx.dsl().batch(
+                    trx.dsl().insertInto(
+                            PREFERENCE,
+                            PREFERENCE.RIDER_ID,
+                            PREFERENCE.PREF_KEY,
+                            PREFERENCE.PREF_VALUE
+                    ).values(
+                            (Long) null,
+                            (String) null,
+                            (String) null
+                    ));
+
             for (var e : model.getPreferences().entrySet()) {
                 query.bind(model.getRiderId(), e.getKey(), e.getValue());
             }
@@ -121,11 +133,13 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
     @Override
     public void delete(Long id) {
         getConnection().transaction((Configuration trx) -> {
-            trx.dsl().deleteFrom(PREFERENCE)
+            trx.dsl()
+                    .deleteFrom(PREFERENCE)
                     .where(PREFERENCE.RIDER_ID.eq(id))
                     .execute();
 
-            trx.dsl().deleteFrom(RIDER_PREFERENCE)
+            trx.dsl()
+                    .deleteFrom(RIDER_PREFERENCE)
                     .where(RIDER_PREFERENCE.RIDER_ID.eq(id))
                     .execute();
         });
@@ -135,7 +149,8 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
     public void updatePreferences(IRiderPreference model) {
         getConnection().batched(trx -> {
             for (var e : model.getPreferences().entrySet()) {
-                trx.dsl().insertInto(PREFERENCE)
+                trx.dsl()
+                        .insertInto(PREFERENCE)
                         .set(PREFERENCE.RIDER_ID, model.getRiderId())
                         .set(PREFERENCE.PREF_VALUE, e.getValue())
                         .set(PREFERENCE.PREF_KEY, e.getKey())

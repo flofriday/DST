@@ -1,5 +1,15 @@
 # DST
+
 My solution for DST(Distributed System Technologies) Spring Semester 2023 at [TU Wien](https://www.tuwien.at/en/).
+
+## Publish
+
+For the assignment we need to upload the code as an archive. Here is the shell script I used to do that:
+
+```bash
+# Assignment 1 
+zip -r Assignment1.zip .idea ass1-doc ass1-jooq ass1-jpa ass1-kv docker pom.xml target
+```
 
 ## Build
 
@@ -13,5 +23,6 @@ You can add the `-DskipTests` flag to skip JUnit test execution.
 There is also a profile `all`, that includes all modules.
 You should activate this profile in your IDE's Maven ([IDEA],[Eclipse]) configuration!
 
-   [IDEA]: https://www.jetbrains.com/help/idea/maven-support.html
-   [Eclipse]: http://www.eclipse.org/m2e/documentation/release-notes-15.html#new-maven-profile-management-ui
+[IDEA]: https://www.jetbrains.com/help/idea/maven-support.html
+
+[Eclipse]: http://www.eclipse.org/m2e/documentation/release-notes-15.html#new-maven-profile-management-ui

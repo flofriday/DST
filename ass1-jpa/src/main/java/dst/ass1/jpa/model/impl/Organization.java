@@ -74,7 +74,7 @@ public class Organization implements IOrganization {
 
     @Override
     public Collection<IOrganization> getPartOf() {
-        return new ArrayList<IOrganization>(partOf);
+        return new ArrayList<>(partOf);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class Organization implements IOrganization {
 
     @Override
     public Collection<IEmployment> getEmployments() {
-        return new ArrayList<IEmployment>(employments);
+        return new ArrayList<>(employments);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class Organization implements IOrganization {
 
     @Override
     public Collection<IVehicle> getVehicles() {
-        return new ArrayList<IVehicle>(vehicles);
+        return new ArrayList<>(vehicles);
     }
 
     @Override

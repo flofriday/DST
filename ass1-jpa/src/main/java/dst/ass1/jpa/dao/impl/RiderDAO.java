@@ -45,19 +45,24 @@ public class RiderDAO implements IRiderDAO {
          *
          *  Filtering the currency here would be way more complex and a lot more network trafic.
          */
-        return new ArrayList<>(em.createNamedQuery("riderBySpentAndCurrency", Rider.class)
-                .setParameter("currency", currency)
-                .setParameter("currencyValue", currencyValue)
-                .getResultList());
+        return new ArrayList<>(
+                em.createNamedQuery("riderBySpentAndCurrency", Rider.class)
+                        .setParameter("currency", currency)
+                        .setParameter("currencyValue", currencyValue)
+                        .getResultList()
+        );
     }
 
     @Override
     public List<IRider> findTopThreeRidersWithMostCanceledTripsAndRatingLowerEqualTwo(Date start, Date end) {
         var cb = em.getCriteriaBuilder();
         var cq = cb.createQuery(Rider.class);
+
+        // Join the two tables
         Root<Rider> rider = cq.from(Rider.class);
         Join<Rider, Trip> trip = rider.join("trips");
 
+        // Create filter conditions (only add the start and end date condition if passed to this function)
         List<Predicate> conditions = new ArrayList<>();
         conditions.add(cb.le(rider.get("avgRating"), 2.0));
         conditions.add(cb.equal(trip.get("state"), TripState.CANCELLED));
@@ -68,12 +73,14 @@ public class RiderDAO implements IRiderDAO {
             conditions.add(cb.lessThanOrEqualTo(trip.get("created"), end));
         }
 
+        // Group by rider and sort by (cancled) trip count
         cq.select(rider)
                 .where(
                         conditions.toArray(Predicate[]::new)
                 ).groupBy(rider)
                 .orderBy(cb.desc(cb.count(trip)));
 
+        // Execute and limit to three results.
         return new ArrayList<>(em.createQuery(cq).setMaxResults(3).getResultList());
     }
 

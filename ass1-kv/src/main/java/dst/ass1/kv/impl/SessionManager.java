@@ -73,7 +73,8 @@ public class SessionManager implements ISessionManager {
             t.expire(DATA_PREFIX + sessionToken, timeToLive);
             t.set(USER_PREFIX + userId, sessionToken);
             t.expire(USER_PREFIX + userId, timeToLive);
-            t.exec();
+            var res = t.exec();
+            if (res == null) throw new SessionCreationFailedException();
             return sessionToken;
         }
     }

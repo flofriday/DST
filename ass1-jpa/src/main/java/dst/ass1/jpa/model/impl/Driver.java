@@ -37,7 +37,7 @@ public class Driver extends PlatformUser implements IDriver {
 
     @Override
     public Collection<IEmployment> getEmployments() {
-        return new ArrayList<IEmployment>(employments);
+        return new ArrayList<>(employments);
     }
 
     @Override

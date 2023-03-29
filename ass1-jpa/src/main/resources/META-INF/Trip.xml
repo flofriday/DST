@@ -22,7 +22,6 @@
 
             <many-to-one name="rider" target-entity="dst.ass1.jpa.model.impl.Rider"/>
 
-            <!-- FIXME: Maybe cascading is not corectly implemented here? -->
             <one-to-one name="tripInfo" target-entity="dst.ass1.jpa.model.impl.TripInfo" mapped-by="trip"
                         orphan-removal="true"/>
 

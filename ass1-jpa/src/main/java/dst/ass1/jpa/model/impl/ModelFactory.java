@@ -9,7 +9,6 @@ public class ModelFactory implements IModelFactory {
 
     @Override
     public IModelFactory createModelFactory() {
-        // FIXME: or singleton?
         return new ModelFactory();
     }
 

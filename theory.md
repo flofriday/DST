@@ -8,10 +8,12 @@ In the previous tasks you already gained some experiences using annotations and 
 **Solution**
 
 Advantages:
+
 - Seperation of relationships and all logic
 - More readable for complex definitions
 
 Disadvantages:
+
 - A lot less ressources online
 - More verbose APIs for often quite simple definitions
 - Two seperate files to define a Table, which do need to be changed in 

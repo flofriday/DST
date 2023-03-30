@@ -11,7 +11,20 @@ For the assignment we need to upload the code as an archive. Here is the shell s
 zip -r Assignment1.zip .idea ass1-doc ass1-jooq ass1-jpa ass1-kv docker pom.xml target
 ```
 
-## Build
+## Build theory.pdf
+
+My answers to the theory questions are written down in theory.md, which I 
+compiled to a PDF with the following command:
+```bash
+pandoc --from gfm \
+       --variable mainfont="Inter"  \
+       --variable monofont="JetBrains Mono" \
+       --pdf-engine=lualatex \
+       -o theory.pdf \
+       theory.md
+```
+
+## Build Java
 
 Each Maven module has a corresponding profile that contains the build config for the respective module.
 For example, to build the JPA task of assignment 1, run

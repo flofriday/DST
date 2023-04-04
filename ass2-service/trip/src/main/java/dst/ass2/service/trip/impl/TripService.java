@@ -112,15 +112,54 @@ public class TripService implements ITripService {
     }
 
     @Override
+    @Transactional
     public boolean addStop(TripDTO trip, Long locationId) throws EntityNotFoundException, IllegalStateException {
-        // FIXME: Implement
-        return false;
+        var model = daoFactory.createTripDAO().findById(trip.getId());
+        if (model == null) throw new EntityNotFoundException("No such trip exists");
+        if (model.getState() != TripState.CREATED) throw new IllegalStateException();
+
+        var location = daoFactory.createLocationDAO().findById(locationId);
+        if (location == null) throw new EntityNotFoundException("No such location exists");
+
+        if (trip.getStops().contains(locationId)) return false;
+
+        model.addStop(location);
+        em.persist(model);
+        trip.getStops().add(locationId);
+        try {
+            trip.setFare(matchingService.calculateFare(trip));
+        } catch (InvalidTripException e) {
+            trip.setFare(null);
+        }
+
+        return true;
     }
 
     @Override
+    @Transactional
     public boolean removeStop(TripDTO trip, Long locationId) throws EntityNotFoundException, IllegalStateException {
-        // FIXME: Implement
-        return false;
+        var model = daoFactory.createTripDAO().findById(trip.getId());
+        if (model == null) throw new EntityNotFoundException("No such trip exists");
+        if (model.getState() != TripState.CREATED) throw new IllegalStateException();
+
+        var location = daoFactory.createLocationDAO().findById(locationId);
+        if (location == null) throw new EntityNotFoundException("No such location exists");
+
+        if (!trip.getStops().contains(locationId)) return false;
+
+        //model.getStops().remove(location);
+        model.setStops(model.getStops().stream().filter(l -> l.getId() != locationId).collect(Collectors.toList()));
+        //model.getStops().remove(location);
+        em.persist(model);
+        //trip.setStops(trip.getStops().stream().filter(t -> !Objects.equals(t, locationId)).collect(Collectors.toList()));
+        trip.getStops().remove(locationId);
+        try {
+            trip.setFare(matchingService.calculateFare(trip));
+        } catch (InvalidTripException e) {
+            trip.setFare(null);
+        }
+
+        return true;
     }
 
     @Override

@@ -36,21 +36,11 @@ public class TripService implements ITripService {
     @Inject
     IMatchingService matchingService;
 
-    private MoneyDTO moneyToDTO(IMoney money) {
-        if (money == null) return null;
-
-        var dto = new MoneyDTO();
-        dto.setCurrency(money.getCurrency());
-        dto.setValue(money.getCurrencyValue());
-        return dto;
-    }
-
     private TripDTO tripToDTO(ITrip trip) {
         if (trip == null) return null;
 
         var dto = new TripDTO();
         dto.setDestinationId(trip.getDestination().getId());
-        //dto.setFare(moneyToDTO(trip.getTripInfo() == null ? null : trip.getTripInfo().getTotal()));
         dto.setId(trip.getId());
         dto.setPickupId(trip.getPickup().getId());
         dto.setRiderId(trip.getRider().getId());
@@ -88,9 +78,19 @@ public class TripService implements ITripService {
     }
 
     @Override
+    @Transactional
     public void confirm(Long tripId) throws EntityNotFoundException, IllegalStateException, InvalidTripException {
-        // FIXME: Implement
+        var model = daoFactory.createTripDAO().findById(tripId);
+        if (model == null) throw new EntityNotFoundException("No such trip exists");
+        if (model.getState() != TripState.CREATED) throw new IllegalStateException();
 
+        model.setState(TripState.QUEUED);
+        em.persist(model);
+
+        var dto = tripToDTO(model);
+        dto.setFare(matchingService.calculateFare(dto));
+
+        matchingService.queueTripForMatching(tripId);
     }
 
     @Override
@@ -106,9 +106,12 @@ public class TripService implements ITripService {
     }
 
     @Override
+    @Transactional
     public void cancel(Long tripId) throws EntityNotFoundException {
-        // FIXME: Implement
-
+        var model = daoFactory.createTripDAO().findById(tripId);
+        if (model == null) throw new EntityNotFoundException("No such trip exists");
+        model.setState(TripState.CANCELLED);
+        em.persist(model);
     }
 
     @Override
@@ -163,9 +166,11 @@ public class TripService implements ITripService {
     }
 
     @Override
+    @Transactional
     public void delete(Long tripId) throws EntityNotFoundException {
-        // FIXME: Implement
-
+        var model = daoFactory.createTripDAO().findById(tripId);
+        if (model == null) throw new EntityNotFoundException("No such trip exists");
+        em.remove(model);
     }
 
     @Override

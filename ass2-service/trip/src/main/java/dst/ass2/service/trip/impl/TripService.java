@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -94,8 +95,41 @@ public class TripService implements ITripService {
     }
 
     @Override
+    @Transactional
     public void match(Long tripId, MatchDTO match) throws EntityNotFoundException, DriverNotAvailableException, IllegalStateException {
-        // FIXME: Implement
+        var tripModel = daoFactory.createTripDAO().findById(tripId);
+        if (tripModel == null) {
+            matchingService.queueTripForMatching(tripId);
+            throw new EntityNotFoundException("No such trip exists");
+        }
+        if (tripModel.getState() != TripState.QUEUED || tripModel.getRider() == null) throw new IllegalStateException();
+
+        var driverModel = daoFactory.createDriverDAO().findById(match.getDriverId());
+        if (driverModel == null) {
+            matchingService.queueTripForMatching(tripId);
+            throw new EntityNotFoundException("No such driver exists");
+        }
+
+        var vehicleModel = daoFactory.createVehicleDAO().findById(match.getVehicleId());
+        if (vehicleModel == null) {
+            matchingService.queueTripForMatching(tripId);
+            throw new EntityNotFoundException("No such vehicle exists");
+        }
+
+        var moneyModel = modelFactory.createMoney();
+        moneyModel.setCurrency(match.getFare().getCurrency());
+        moneyModel.setCurrencyValue(match.getFare().getValue());
+
+        var matchModel = modelFactory.createMatch();
+        matchModel.setTrip(tripModel);
+        matchModel.setDriver(driverModel);
+        matchModel.setVehicle(vehicleModel);
+        matchModel.setDate(new Date());
+        matchModel.setFare(moneyModel);
+        em.persist(matchModel);
+
+        tripModel.setState(TripState.MATCHED);
+        em.persist(tripModel);
 
     }
 

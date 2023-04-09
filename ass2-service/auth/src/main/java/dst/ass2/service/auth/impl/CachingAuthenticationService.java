@@ -5,7 +5,6 @@ import dst.ass1.jpa.model.IRider;
 import dst.ass2.service.api.auth.AuthenticationException;
 import dst.ass2.service.api.auth.NoSuchUserException;
 import dst.ass2.service.auth.ICachingAuthenticationService;
-import org.checkerframework.checker.units.qual.C;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
@@ -13,7 +12,6 @@ import javax.ejb.Singleton;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;

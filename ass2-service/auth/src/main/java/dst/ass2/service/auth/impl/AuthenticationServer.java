@@ -6,19 +6,22 @@ import dst.ass2.service.api.auth.NoSuchUserException;
 import dst.ass2.service.api.auth.proto.*;
 import io.grpc.stub.StreamObserver;
 
+import javax.annotation.ManagedBean;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
-@Singleton
+@ManagedBean
 public class AuthenticationServer extends AuthServiceGrpc.AuthServiceImplBase {
 
     @Inject
-    IAuthenticationService authenticationService;
+    private IAuthenticationService authenticationService;
 
     @Override
     public void authenticate(AuthenticationRequest request, StreamObserver<AuthenticationResponse> responseObserver) {
 
         var responseBuilder = AuthenticationResponse.newBuilder();
+        // FIXME we should send the exception to the client
         try {
             var token = authenticationService.authenticate(request.getEmail(), request.getPassword());
             responseBuilder.setToken(token).setAuthenticated(true);

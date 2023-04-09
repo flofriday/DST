@@ -7,6 +7,8 @@ import dst.ass2.service.auth.client.AuthenticationClientProperties;
 import dst.ass2.service.auth.client.IAuthenticationClient;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 
 public class GrpcAuthenticationClient implements IAuthenticationClient {
 
@@ -23,8 +25,19 @@ public class GrpcAuthenticationClient implements IAuthenticationClient {
     @Override
     public String authenticate(String email, String password) throws NoSuchUserException, AuthenticationException {
         var request = AuthenticationRequest.newBuilder().setEmail(email).setPassword(password).build();
-        var response = blockingStub.authenticate(request);
-        return response.getToken();
+        try {
+            var response = blockingStub.authenticate(request);
+            return response.getToken();
+        } catch (StatusRuntimeException e) {
+            var status = Status.fromThrowable(e);
+            if (status == Status.NOT_FOUND) {
+                throw new NoSuchUserException();
+            }
+            if (status == Status.PERMISSION_DENIED) {
+                throw new AuthenticationException();
+            }
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -36,6 +49,6 @@ public class GrpcAuthenticationClient implements IAuthenticationClient {
 
     @Override
     public void close() {
-        //channel.shutdown();
+        channel.shutdown();
     }
 }

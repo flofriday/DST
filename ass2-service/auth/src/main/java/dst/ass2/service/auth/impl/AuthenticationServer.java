@@ -4,6 +4,7 @@ import dst.ass2.service.api.auth.AuthenticationException;
 import dst.ass2.service.api.auth.IAuthenticationService;
 import dst.ass2.service.api.auth.NoSuchUserException;
 import dst.ass2.service.api.auth.proto.*;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
 import javax.annotation.ManagedBean;
@@ -21,14 +22,17 @@ public class AuthenticationServer extends AuthServiceGrpc.AuthServiceImplBase {
     public void authenticate(AuthenticationRequest request, StreamObserver<AuthenticationResponse> responseObserver) {
 
         var responseBuilder = AuthenticationResponse.newBuilder();
-        // FIXME we should send the exception to the client
         try {
             var token = authenticationService.authenticate(request.getEmail(), request.getPassword());
             responseBuilder.setToken(token).setAuthenticated(true);
         } catch (NoSuchUserException e) {
-            responseBuilder.setAuthenticated(false);
+            var status = Status.NOT_FOUND.withCause(e);
+            responseObserver.onError(status.asException());
+            return;
         } catch (AuthenticationException e) {
-            responseBuilder.setAuthenticated(false);
+            var status = Status.PERMISSION_DENIED.withCause(e);
+            responseObserver.onError(status.asException());
+            return;
         }
 
         responseObserver.onNext(responseBuilder.build());

@@ -12,6 +12,7 @@ import javax.ejb.Singleton;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -76,12 +77,11 @@ public class CachingAuthenticationService implements ICachingAuthenticationServi
     }
 
     @Override
+    @Transactional
     public String authenticate(String email, String password) throws NoSuchUserException, AuthenticationException {
         // Get saved (hashed) password
-        System.out.println(password);
         var sha1 = passwords.get(email);
         if (sha1 == null) {
-            System.out.println("Not in cache");
             var rider = daoFactory.createRiderDAO().findByEmail(email);
             if (rider == null)
                 throw new NoSuchUserException();
@@ -91,8 +91,6 @@ public class CachingAuthenticationService implements ICachingAuthenticationServi
         }
 
         // Verify the password
-        System.out.println(toHexString(sha1));
-        System.out.println(toHexString(hashPassowrd(password)));
         if (!Arrays.equals(sha1, hashPassowrd(password)))
             throw new AuthenticationException();
 

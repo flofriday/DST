@@ -4,8 +4,10 @@ import dst.ass1.jpa.dao.IDAOFactory;
 import dst.ass1.jpa.dao.ITripDAO;
 import dst.ass1.jpa.dao.impl.TripDAO;
 import dst.ass1.jpa.model.*;
+import dst.ass1.jpa.model.impl.Driver;
 import dst.ass1.jpa.model.impl.Money;
 import dst.ass1.jpa.model.impl.Trip;
+import dst.ass1.jpa.model.impl.TripInfo;
 import dst.ass2.service.api.match.IMatchingService;
 import dst.ass2.service.api.trip.*;
 
@@ -97,7 +99,8 @@ public class TripService implements ITripService {
     @Override
     @Transactional
     public void match(Long tripId, MatchDTO match) throws EntityNotFoundException, DriverNotAvailableException, IllegalStateException {
-        var tripModel = daoFactory.createTripDAO().findById(tripId);
+        var tripDAO = daoFactory.createTripDAO();
+        var tripModel = tripDAO.findById(tripId);
         if (tripModel == null) {
             matchingService.queueTripForMatching(tripId);
             throw new EntityNotFoundException("No such trip exists");
@@ -110,10 +113,16 @@ public class TripService implements ITripService {
             throw new EntityNotFoundException("No such driver exists");
         }
 
+
         var vehicleModel = daoFactory.createVehicleDAO().findById(match.getVehicleId());
         if (vehicleModel == null) {
             matchingService.queueTripForMatching(tripId);
             throw new EntityNotFoundException("No such vehicle exists");
+        }
+
+        if (!tripDAO.findActiveTripsByDriver(driverModel.getId()).isEmpty()) {
+            matchingService.queueTripForMatching(tripId);
+            throw new DriverNotAvailableException("The driver is already assigned");
         }
 
         var moneyModel = modelFactory.createMoney();
@@ -130,13 +139,24 @@ public class TripService implements ITripService {
 
         tripModel.setState(TripState.MATCHED);
         em.persist(tripModel);
-
     }
 
     @Override
+    @Transactional
     public void complete(Long tripId, TripInfoDTO tripInfoDTO) throws EntityNotFoundException {
-        // FIXME: Implement
+        var trip = daoFactory.createTripDAO().findById(tripId);
+        if (trip == null) throw new EntityNotFoundException("No such trip exists");
+        trip.setState(TripState.COMPLETED);
 
+        var tripInfo = new TripInfo();
+        tripInfo.setTrip(trip);
+        tripInfo.setCompleted(tripInfoDTO.getCompleted());
+        tripInfo.setDistance(tripInfoDTO.getDistance());
+        var total = new Money();
+        total.setCurrency(tripInfoDTO.getFare().getCurrency());
+        total.setCurrencyValue(tripInfoDTO.getFare().getValue());
+        tripInfo.setTotal(total);
+        em.persist(tripInfo);
     }
 
     @Override
@@ -184,11 +204,8 @@ public class TripService implements ITripService {
 
         if (!trip.getStops().contains(locationId)) return false;
 
-        //model.getStops().remove(location);
         model.setStops(model.getStops().stream().filter(l -> l.getId() != locationId).collect(Collectors.toList()));
-        //model.getStops().remove(location);
         em.persist(model);
-        //trip.setStops(trip.getStops().stream().filter(t -> !Objects.equals(t, locationId)).collect(Collectors.toList()));
         trip.getStops().remove(locationId);
         try {
             trip.setFare(matchingService.calculateFare(trip));

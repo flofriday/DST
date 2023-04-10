@@ -16,7 +16,7 @@ public class TripServiceRessource implements ITripServiceResource {
     @Override
     @POST
     @Path("")
-    public Response createTrip(@QueryParam("riderId") Long riderId, @QueryParam("pickupId") Long pickupId, @QueryParam("destinationId") Long destinationId) throws EntityNotFoundException {
+    public Response createTrip(@FormParam("riderId") Long riderId, @FormParam("pickupId") Long pickupId, @FormParam("destinationId") Long destinationId) throws EntityNotFoundException {
         var trip = tripService.create(riderId, pickupId, destinationId);
         return Response
                 .status(Response.Status.OK)
@@ -60,27 +60,65 @@ public class TripServiceRessource implements ITripServiceResource {
     }
 
     @Override
-    public Response addStop(Long tripId, Long locationId) throws EntityNotFoundException {
-        return null;
+    @POST
+    @Path("{id}/stops")
+    @Produces("application/json")
+    public Response addStop(@PathParam("id") Long tripId, @FormParam("locationId") Long locationId) throws EntityNotFoundException {
+        var trip = tripService.find(tripId);
+        var wasAdded = tripService.addStop(trip, locationId);
+        if (!wasAdded) {
+            return Response
+                    .status(Response.Status.PRECONDITION_FAILED)
+                    .build();
+        }
+        return Response
+                .ok()
+                .entity(trip.getFare())
+                .build();
     }
 
     @Override
-    public Response removeStop(Long tripId, Long locationId) throws EntityNotFoundException {
-        return null;
+    @DELETE
+    @Path("{id}/stops/{locationId}")
+    public Response removeStop(@PathParam("id") Long tripId, @PathParam("locationId") Long locationId) throws EntityNotFoundException {
+        var trip = tripService.find(tripId);
+        var wasDeleted = tripService.removeStop(trip, locationId);
+        if (!wasDeleted) {
+            return Response
+                    .status(Response.Status.PRECONDITION_FAILED)
+                    .build();
+        }
+        return Response
+                .ok()
+                .build();
     }
 
     @Override
-    public Response match(Long tripId, MatchDTO matchDTO) throws EntityNotFoundException, DriverNotAvailableException {
-        return null;
+    @POST
+    @Path("{id}/match")
+    @Consumes("application/json")
+    public Response match(@PathParam("id") Long tripId, MatchDTO matchDTO) throws EntityNotFoundException, DriverNotAvailableException {
+        tripService.match(tripId, matchDTO);
+        return Response
+                .status(Response.Status.CREATED)
+                .build();
     }
 
     @Override
-    public Response complete(Long tripId, TripInfoDTO tripInfoDTO) throws EntityNotFoundException {
-        return null;
+    @POST
+    @Path("{id}/complete")
+    public Response complete(@PathParam("id") Long tripId, TripInfoDTO tripInfoDTO) throws EntityNotFoundException {
+        tripService.complete(tripId, tripInfoDTO);
+        return Response
+                .status(Response.Status.CREATED)
+                .build();
     }
 
     @Override
-    public Response cancel(Long tripId) throws EntityNotFoundException {
-        return null;
+    @PATCH
+    @Path("{id}/cancel")
+    public Response cancel(@PathParam("id") Long tripId) throws EntityNotFoundException {
+        tripService.cancel(tripId);
+        return Response.ok().build();
     }
 }

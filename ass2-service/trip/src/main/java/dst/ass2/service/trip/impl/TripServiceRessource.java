@@ -4,10 +4,7 @@ import dst.ass2.service.api.trip.*;
 import dst.ass2.service.api.trip.rest.ITripServiceResource;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 @Path("/trips")
@@ -17,8 +14,14 @@ public class TripServiceRessource implements ITripServiceResource {
     private ITripService tripService;
 
     @Override
-    public Response createTrip(Long riderId, Long pickupId, Long destinationId) throws EntityNotFoundException {
-        return null;
+    @POST
+    @Path("")
+    public Response createTrip(@QueryParam("riderId") Long riderId, @QueryParam("pickupId") Long pickupId, @QueryParam("destinationId") Long destinationId) throws EntityNotFoundException {
+        var trip = tripService.create(riderId, pickupId, destinationId);
+        return Response
+                .status(Response.Status.OK)
+                .entity(trip.getId())
+                .build();
     }
 
     @Override

@@ -25,7 +25,8 @@
             <one-to-one name="tripInfo" target-entity="dst.ass1.jpa.model.impl.TripInfo" mapped-by="trip"
                         orphan-removal="true"/>
 
-            <one-to-one name="match" target-entity="dst.ass1.jpa.model.impl.Match" mapped-by="trip">
+            <one-to-one name="match" target-entity="dst.ass1.jpa.model.impl.Match" mapped-by="trip"
+                        orphan-removal="true">
             </one-to-one>
 
 

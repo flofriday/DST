@@ -1,12 +1,11 @@
 package dst.ass2.service.trip.impl;
 
 import dst.ass1.jpa.dao.IDAOFactory;
-import dst.ass1.jpa.dao.ITripDAO;
-import dst.ass1.jpa.dao.impl.TripDAO;
-import dst.ass1.jpa.model.*;
-import dst.ass1.jpa.model.impl.Driver;
+import dst.ass1.jpa.model.ILocation;
+import dst.ass1.jpa.model.IModelFactory;
+import dst.ass1.jpa.model.ITrip;
+import dst.ass1.jpa.model.TripState;
 import dst.ass1.jpa.model.impl.Money;
-import dst.ass1.jpa.model.impl.Trip;
 import dst.ass1.jpa.model.impl.TripInfo;
 import dst.ass2.service.api.match.IMatchingService;
 import dst.ass2.service.api.trip.*;

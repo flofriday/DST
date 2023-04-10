@@ -25,8 +25,11 @@ public class TripServiceRessource implements ITripServiceResource {
     }
 
     @Override
-    public Response confirm(Long tripId) throws EntityNotFoundException, InvalidTripException {
-        return null;
+    @PATCH
+    @Path("{id}/confirm")
+    public Response confirm(@PathParam("id") Long tripId) throws EntityNotFoundException, InvalidTripException {
+        tripService.confirm(tripId);
+        return Response.ok().build();
     }
 
     @Override
@@ -45,9 +48,15 @@ public class TripServiceRessource implements ITripServiceResource {
                 .build();
     }
 
+
     @Override
-    public Response deleteTrip(Long tripId) throws EntityNotFoundException {
-        return null;
+    @DELETE
+    @Path("{id}")
+    public Response deleteTrip(@PathParam("id") Long tripId) throws EntityNotFoundException {
+        tripService.delete(tripId);
+        return Response
+                .status(Response.Status.OK)
+                .build();
     }
 
     @Override

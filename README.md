@@ -2,19 +2,11 @@
 
 My solution for DST(Distributed System Technologies) Spring Semester 2023 at [TU Wien](https://www.tuwien.at/en/).
 
-## Publish
+## Theory
 
-For the assignment we need to upload the code as an archive. Here is the shell script I used to do that:
-
-```bash
-# Assignment 1 
-zip -r Assignment1.zip .idea ass1-doc ass1-jooq ass1-jpa ass1-kv docker pom.xml target
-```
-
-## Build theory.pdf
-
-My answers to the theory questions are written down in theory.md, which I 
+My answers to the theory questions are written down in theory.md, which I
 compiled to a PDF with the following command:
+
 ```bash
 pandoc --from gfm \
        --variable mainfont="Inter"  \
@@ -23,6 +15,12 @@ pandoc --from gfm \
        -o theory.pdf \
        theory.md
 ```
+
+## Insomnia Config
+
+In some examples you need to test the REST API and and I did that with [Insomnia](https://insomnia.rest/) (instead of
+Postman).
+You can import my config(v4) from `insomnia.yaml`.
 
 ## Build Java
 

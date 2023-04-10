@@ -1,0 +1,93 @@
+_type: export
+__export_format: 4
+__export_date: 2023-04-10T13:32:51.043Z
+__export_source: insomnia.desktop.app:v2022.7.5
+resources:
+  - _id: req_f652eba7815d4699869a68bddfb8e7b1
+    parentId: wrk_4b93a716b9d84d6eaf0e8a744ddf36bd
+    modified: 1681132209684
+    created: 1681131921829
+    url: localhost:8091/trips
+    name: Post Trip
+    description: ""
+    method: POST
+    body: {}
+    parameters:
+      - id: pair_7c8c8195374846a58c8486f02a9461b0
+        name: riderId
+        value: "1"
+        description: ""
+      - id: pair_2db144cb9c204bbbbf7422c5d56912a5
+        name: pickupId
+        value: "1"
+        description: ""
+      - id: pair_096ee120479b477abfc537fb2cacc13a
+        name: destinationId
+        value: "2"
+        description: ""
+    headers: []
+    authentication: {}
+    metaSortKey: -1681131921829
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: wrk_4b93a716b9d84d6eaf0e8a744ddf36bd
+    parentId: null
+    modified: 1681133527160
+    created: 1681120253532
+    name: DST
+    description: ""
+    scope: collection
+    _type: workspace
+  - _id: req_13a050a61d154756ae6a8c50078bb384
+    parentId: wrk_4b93a716b9d84d6eaf0e8a744ddf36bd
+    modified: 1681131912309
+    created: 1681120260955
+    url: localhost:8091/trips/1
+    name: Get Trip
+    description: ""
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1681120260955
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: env_90c0a48e4ab20fd4401c5f5234e07eb3947cb3c7
+    parentId: wrk_4b93a716b9d84d6eaf0e8a744ddf36bd
+    modified: 1681120253535
+    created: 1681120253535
+    name: Base Environment
+    data: {}
+    dataPropertyOrder: null
+    color: null
+    isPrivate: false
+    metaSortKey: 1681120253535
+    _type: environment
+  - _id: jar_90c0a48e4ab20fd4401c5f5234e07eb3947cb3c7
+    parentId: wrk_4b93a716b9d84d6eaf0e8a744ddf36bd
+    modified: 1681120253535
+    created: 1681120253535
+    name: Default Jar
+    cookies: []
+    _type: cookie_jar
+  - _id: spc_fb19e0fed6104d12845ef8e774b2928d
+    parentId: wrk_4b93a716b9d84d6eaf0e8a744ddf36bd
+    modified: 1681120253532
+    created: 1681120253532
+    fileName: DST 2.1.3.1
+    contents: ""
+    contentType: yaml
+    _type: api_spec

@@ -14,6 +14,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 
+
 @Path("/trips")
 public class TripServiceResourceFacade implements ITripServiceResource {
 
@@ -36,6 +37,7 @@ public class TripServiceResourceFacade implements ITripServiceResource {
     @Override
     @POST
     @Path("")
+    @AuthenticationRequired
     public Response createTrip(@FormParam("riderId") Long riderId, @FormParam("pickupId") Long pickupId, @FormParam("destinationId") Long destinationId) throws EntityNotFoundException {
         return tripServiceResource.createTrip(riderId, pickupId, destinationId);
     }
@@ -43,6 +45,7 @@ public class TripServiceResourceFacade implements ITripServiceResource {
     @Override
     @PATCH
     @Path("{id}/confirm")
+    @AuthenticationRequired
     public Response confirm(@PathParam("id") Long tripId) throws EntityNotFoundException, InvalidTripException {
         return tripServiceResource.confirm(tripId);
     }
@@ -51,6 +54,7 @@ public class TripServiceResourceFacade implements ITripServiceResource {
     @GET
     @Path("{id}")
     @Produces("application/json")
+    @AuthenticationRequired
     public Response getTrip(@PathParam("id") Long tripId) throws EntityNotFoundException {
         return tripServiceResource.getTrip(tripId);
     }
@@ -59,6 +63,7 @@ public class TripServiceResourceFacade implements ITripServiceResource {
     @Override
     @DELETE
     @Path("{id}")
+    @AuthenticationRequired
     public Response deleteTrip(@PathParam("id") Long tripId) throws EntityNotFoundException {
         return tripServiceResource.deleteTrip(tripId);
     }
@@ -67,6 +72,7 @@ public class TripServiceResourceFacade implements ITripServiceResource {
     @POST
     @Path("{id}/stops")
     @Produces("application/json")
+    @AuthenticationRequired
     public Response addStop(@PathParam("id") Long tripId, @FormParam("locationId") Long locationId) throws EntityNotFoundException {
         return tripServiceResource.addStop(tripId, locationId);
     }
@@ -74,6 +80,7 @@ public class TripServiceResourceFacade implements ITripServiceResource {
     @Override
     @DELETE
     @Path("{id}/stops/{locationId}")
+    @AuthenticationRequired
     public Response removeStop(@PathParam("id") Long tripId, @PathParam("locationId") Long locationId) throws EntityNotFoundException {
         return tripServiceResource.removeStop(tripId, locationId);
     }
@@ -82,6 +89,7 @@ public class TripServiceResourceFacade implements ITripServiceResource {
     @POST
     @Path("{id}/match")
     @Consumes("application/json")
+    @AuthenticationRequired
     public Response match(@PathParam("id") Long tripId, MatchDTO matchDTO) throws EntityNotFoundException, DriverNotAvailableException {
         return tripServiceResource.match(tripId, matchDTO);
     }
@@ -90,6 +98,7 @@ public class TripServiceResourceFacade implements ITripServiceResource {
     @POST
     @Path("{id}/complete")
     @Consumes("application/json")
+    @AuthenticationRequired
     public Response complete(@PathParam("id") Long tripId, TripInfoDTO tripInfoDTO) throws EntityNotFoundException {
         return tripServiceResource.complete(tripId, tripInfoDTO);
     }
@@ -97,6 +106,7 @@ public class TripServiceResourceFacade implements ITripServiceResource {
     @Override
     @PATCH
     @Path("{id}/cancel")
+    @AuthenticationRequired
     public Response cancel(@PathParam("id") Long tripId) throws EntityNotFoundException {
         return tripServiceResource.cancel(tripId);
     }

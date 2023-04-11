@@ -1,35 +1,50 @@
-package dst.ass2.service.trip.impl;
+package dst.ass2.service.facade.impl;
 
+import com.fasterxml.jackson.core.util.JacksonFeature;
 import dst.ass2.service.api.trip.*;
 import dst.ass2.service.api.trip.rest.ITripServiceResource;
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
+import org.glassfish.jersey.client.proxy.WebResourceFactory;
+import org.glassfish.jersey.server.ResourceConfig;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
+import java.net.URI;
 
 @Path("/trips")
-public class TripServiceRessource implements ITripServiceResource {
+public class TripServiceResourceFacade implements ITripServiceResource {
+
+    private ITripServiceResource tripServiceResource;
 
     @Inject
-    private ITripService tripService;
+    public TripServiceResourceFacade(URI tripServiceURI) {
+        var configuration = new ResourceConfig()
+                .packages("dst.ass2")
+                .property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true)
+                .property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true)
+                .register(JacksonFeature.class);
+
+        var client = ClientBuilder.newClient(configuration);
+        var webTarget = client.target(tripServiceURI);
+        this.tripServiceResource = WebResourceFactory.newResource(ITripServiceResource.class, webTarget);
+    }
+
 
     @Override
     @POST
     @Path("")
     public Response createTrip(@FormParam("riderId") Long riderId, @FormParam("pickupId") Long pickupId, @FormParam("destinationId") Long destinationId) throws EntityNotFoundException {
-        var trip = tripService.create(riderId, pickupId, destinationId);
-        return Response
-                .status(Response.Status.OK)
-                .entity(trip.getId())
-                .build();
+        return tripServiceResource.createTrip(riderId, pickupId, destinationId);
     }
 
     @Override
     @PATCH
     @Path("{id}/confirm")
     public Response confirm(@PathParam("id") Long tripId) throws EntityNotFoundException, InvalidTripException {
-        tripService.confirm(tripId);
-        return Response.ok().build();
+        return tripServiceResource.confirm(tripId);
     }
 
     @Override
@@ -37,15 +52,7 @@ public class TripServiceRessource implements ITripServiceResource {
     @Path("{id}")
     @Produces("application/json")
     public Response getTrip(@PathParam("id") Long tripId) throws EntityNotFoundException {
-        var trip = tripService.find(tripId);
-        if (trip == null) {
-            throw new EntityNotFoundException("No trip with that id exists");
-        }
-
-        return Response
-                .status(Response.Status.OK)
-                .entity(trip)
-                .build();
+        return tripServiceResource.getTrip(tripId);
     }
 
 
@@ -53,10 +60,7 @@ public class TripServiceRessource implements ITripServiceResource {
     @DELETE
     @Path("{id}")
     public Response deleteTrip(@PathParam("id") Long tripId) throws EntityNotFoundException {
-        tripService.delete(tripId);
-        return Response
-                .status(Response.Status.OK)
-                .build();
+        return tripServiceResource.deleteTrip(tripId);
     }
 
     @Override
@@ -64,33 +68,14 @@ public class TripServiceRessource implements ITripServiceResource {
     @Path("{id}/stops")
     @Produces("application/json")
     public Response addStop(@PathParam("id") Long tripId, @FormParam("locationId") Long locationId) throws EntityNotFoundException {
-        var trip = tripService.find(tripId);
-        var wasAdded = tripService.addStop(trip, locationId);
-        if (!wasAdded) {
-            return Response
-                    .status(Response.Status.PRECONDITION_FAILED)
-                    .build();
-        }
-        return Response
-                .ok()
-                .entity(trip.getFare())
-                .build();
+        return tripServiceResource.addStop(tripId, locationId);
     }
 
     @Override
     @DELETE
     @Path("{id}/stops/{locationId}")
     public Response removeStop(@PathParam("id") Long tripId, @PathParam("locationId") Long locationId) throws EntityNotFoundException {
-        var trip = tripService.find(tripId);
-        var wasDeleted = tripService.removeStop(trip, locationId);
-        if (!wasDeleted) {
-            return Response
-                    .status(Response.Status.PRECONDITION_FAILED)
-                    .build();
-        }
-        return Response
-                .ok()
-                .build();
+        return tripServiceResource.removeStop(tripId, locationId);
     }
 
     @Override
@@ -98,10 +83,7 @@ public class TripServiceRessource implements ITripServiceResource {
     @Path("{id}/match")
     @Consumes("application/json")
     public Response match(@PathParam("id") Long tripId, MatchDTO matchDTO) throws EntityNotFoundException, DriverNotAvailableException {
-        tripService.match(tripId, matchDTO);
-        return Response
-                .status(Response.Status.CREATED)
-                .build();
+        return tripServiceResource.match(tripId, matchDTO);
     }
 
     @Override
@@ -109,17 +91,13 @@ public class TripServiceRessource implements ITripServiceResource {
     @Path("{id}/complete")
     @Consumes("application/json")
     public Response complete(@PathParam("id") Long tripId, TripInfoDTO tripInfoDTO) throws EntityNotFoundException {
-        tripService.complete(tripId, tripInfoDTO);
-        return Response
-                .status(Response.Status.CREATED)
-                .build();
+        return tripServiceResource.complete(tripId, tripInfoDTO);
     }
 
     @Override
     @PATCH
     @Path("{id}/cancel")
     public Response cancel(@PathParam("id") Long tripId) throws EntityNotFoundException {
-        tripService.cancel(tripId);
-        return Response.ok().build();
+        return tripServiceResource.cancel(tripId);
     }
 }

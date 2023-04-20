@@ -1,16 +1,10 @@
 package dst.ass2.ioc.di.impl;
 
 import dst.ass2.ioc.di.*;
-import dst.ass2.ioc.di.annotation.Component;
-import dst.ass2.ioc.di.annotation.Inject;
-import dst.ass2.ioc.di.annotation.Property;
-import dst.ass2.ioc.di.annotation.Scope;
+import dst.ass2.ioc.di.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class ObjectContainer implements IObjectContainer {
 
@@ -26,8 +20,9 @@ public class ObjectContainer implements IObjectContainer {
         return properties;
     }
 
+    // FIXME: Split this method int multiple smaller ones for improved readability
     @Override
-    public <T> T getObject(Class<T> type) throws InjectionException {
+    synchronized public <T> T getObject(Class<T> type) throws InjectionException {
         // Verify the object is a Component
         var componentAnnotation = type.getAnnotation(Component.class);
         if (componentAnnotation == null) {
@@ -51,28 +46,30 @@ public class ObjectContainer implements IObjectContainer {
             throw new ObjectCreationException(e);
         }
 
-        // Inject values
-        var fields = new java.util.ArrayList<>(List.of(type.getDeclaredFields()));
+        // Get all fields and methods
+        var fields = new ArrayList<>(List.of(type.getDeclaredFields()));
+        var methods = new ArrayList<>(List.of(type.getDeclaredMethods()));
         for (var sclass = type.getSuperclass(); sclass != null; sclass = sclass.getSuperclass()) {
             fields.addAll(List.of(sclass.getDeclaredFields()));
+            methods.addAll(List.of(sclass.getDeclaredMethods()));
         }
+
+        // Inject values
         for (var field : fields) {
             var annotation = field.getAnnotation(Inject.class);
             if (annotation == null) continue;
+            field.setAccessible(true);
 
             try {
-                field.setAccessible(true);
-                var injectabel = getObject(annotation.targetType());
-
-                try {
-                    field.set(obj, injectabel);
-                } catch (IllegalAccessException e) {
-                    throw new InjectionException(e);
-                }
-
+                var targetType = annotation.targetType() != Void.class ? annotation.targetType() : field.getType();
+                var injectabel = getObject(targetType);
+                field.set(obj, injectabel);
             } catch (InjectionException e) {
                 if (!annotation.optional())
                     throw e;
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                if (!annotation.optional())
+                    throw new InvalidDeclarationException(e);
             }
 
         }
@@ -118,7 +115,28 @@ public class ObjectContainer implements IObjectContainer {
             }
         }
 
-        // Fixme: Call Init
+        // Call Initialize method
+        var seenInitializers = new HashSet<String>();
+        for (var method : methods) {
+            if (!method.isAnnotationPresent(Initialize.class))
+                continue;
+
+            method.setAccessible(true);
+
+            // The List of methods contains superclasses later so we will only call the newest overwritten initializer
+            if (seenInitializers.contains(method.getName()))
+                continue;
+            seenInitializers.add(method.getName());
+
+            if (method.getParameterCount() > 0)
+                throw new InvalidDeclarationException("Initializer should not have any parameters: " + method.toString());
+
+            try {
+                method.invoke(obj);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new ObjectCreationException(e);
+            }
+        }
 
         // Add to singleton cache
         if (componentAnnotation.scope().equals(Scope.SINGLETON)) {

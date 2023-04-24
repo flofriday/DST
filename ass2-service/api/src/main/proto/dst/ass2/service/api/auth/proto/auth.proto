@@ -23,5 +23,5 @@ message TokenValidationResponse {
 
 service AuthService {
   rpc authenticate(AuthenticationRequest) returns (AuthenticationResponse);
-  rpc validateToken(TokenValidationRequest) returns (TokenValidationResponse) throws ();
+  rpc validateToken(TokenValidationRequest) returns (TokenValidationResponse);
 }

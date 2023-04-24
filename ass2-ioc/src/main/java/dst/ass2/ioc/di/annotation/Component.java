@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
  * Marks a class to be container managed.
  */
 @Target(ElementType.TYPE)
-// FIXME: Probably just Class retention is fine
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Component {
 

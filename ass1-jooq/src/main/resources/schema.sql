@@ -21,6 +21,5 @@ CREATE TABLE preference (
   rider_id BIGINT,
   pref_key TEXT,
   pref_value TEXT,
-  FOREIGN KEY (rider_id) REFERENCES rider_preference (rider_id),
-  UNIQUE KEY rider_key_idx (rider_id, pref_key)
+  FOREIGN KEY (rider_id) REFERENCES rider_preference (rider_id)
 );

@@ -46,12 +46,10 @@ public class LockingInjector implements ClassFileTransformer {
             Object annotation = null;
             try {
                 annotation = method.getAnnotation(Lock.class);
-                System.out.println(annotation);
-                System.out.println(annotation.getClass());
-                System.out.println("---");
+
             } catch (ClassNotFoundException e) {
-                continue;
-                //throw new RuntimeException(e);
+                //continue;
+                throw new RuntimeException(e);
             }
 
             if (annotation == null) continue;
@@ -68,14 +66,15 @@ public class LockingInjector implements ClassFileTransformer {
                 throw new RuntimeException(e);
             }
 
+
             try {
                 System.out.println("JOOOOOOOOOOOOOOOOOO");
                 // Add scope block
-                method.insertBefore("System.out.println(\"FLOOOOOOOOOOOOOOOOOOOOOOO XXXXXXXXX\");");
-                //method.insertBefore("xxxdst.ass2.ioc.lock.LockManager.getInstance().getLock(\"" + lockName + "\").lock();");
-                //method.insertAfter("xxxdst.ass2.ioc.lock.LockManager.getInstance().getLock(\"" + lockName + "\").lock();");
+                //method.insertBefore("System.out.println(\"FLOOOOOOOOOOOOOOOOOOOOOOO XXXXXXXXX\");");
+                method.insertBefore("dst.ass2.ioc.lock.LockManager.getInstance().getLock(\"" + lockName + "\").lock();");
+                method.insertAfter("dst.ass2.ioc.lock.LockManager.getInstance().getLock(\"" + lockName + "\").unlock(); return $_;", true);
             } catch (CannotCompileException e) {
-                System.out.println("ERRRRRRRRROR");
+                System.out.println("ERROR Compiling");
                 throw new RuntimeException(e);
             }
         }
@@ -83,6 +82,7 @@ public class LockingInjector implements ClassFileTransformer {
         try {
             return cl.toBytecode();
         } catch (IOException e) {
+            System.out.println("NOOOOOOO a ERRRRRRRRROR");
             throw new RuntimeException(e);
         } catch (CannotCompileException e) {
             System.out.println("NOOOOOOO a ERRRRRRRRROR");

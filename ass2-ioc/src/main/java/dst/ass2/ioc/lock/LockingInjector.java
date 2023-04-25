@@ -4,6 +4,7 @@ import dst.ass2.ioc.di.annotation.Component;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.NotFoundException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,15 +21,8 @@ public class LockingInjector implements ClassFileTransformer {
                             Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
                             byte[] classfileBuffer) throws IllegalClassFormatException {
 
-        //System.out.println("Clazz: " + className);
 
-        //ClassPool pool = ClassPool.getDefault();
-
-        //System.out.println("Workded: " + className);
-        //return classfileBuffer;
-        //return null;
         ClassPool pool = ClassPool.getDefault();
-
         CtClass cl = null;
 
         try {
@@ -43,49 +37,40 @@ public class LockingInjector implements ClassFileTransformer {
         }
 
         for (var method : cl.getDeclaredMethods()) {
+            // Only operate on @Lock annotated methods
             Object annotation = null;
             try {
                 annotation = method.getAnnotation(Lock.class);
-
             } catch (ClassNotFoundException e) {
-                //continue;
                 throw new RuntimeException(e);
             }
 
             if (annotation == null) continue;
 
+            // Get the name of the lock
             String lockName;
             try {
                 lockName = annotation.getClass().getMethod("value")
                         .invoke(annotation).toString();
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
 
 
+            // Insert bytecode for locks and unlocks
             try {
-                System.out.println("JOOOOOOOOOOOOOOOOOO");
-                // Add scope block
-                //method.insertBefore("System.out.println(\"FLOOOOOOOOOOOOOOOOOOOOOOO XXXXXXXXX\");");
                 method.insertBefore("dst.ass2.ioc.lock.LockManager.getInstance().getLock(\"" + lockName + "\").lock();");
-                method.insertAfter("dst.ass2.ioc.lock.LockManager.getInstance().getLock(\"" + lockName + "\").unlock(); return $_;", true);
-            } catch (CannotCompileException e) {
-                System.out.println("ERROR Compiling");
+                method.insertAfter("dst.ass2.ioc.lock.LockManager.getInstance().getLock(\"" + lockName + "\").unlock(); return $_;", false);
+                method.addCatch("dst.ass2.ioc.lock.LockManager.getInstance().getLock(\"" + lockName + "\").unlock(); throw $e;", pool.get("java.lang.Exception"));
+            } catch (CannotCompileException | NotFoundException e) {
                 throw new RuntimeException(e);
             }
         }
 
+        // Compile the class to bytecode and return it
         try {
             return cl.toBytecode();
-        } catch (IOException e) {
-            System.out.println("NOOOOOOO a ERRRRRRRRROR");
-            throw new RuntimeException(e);
-        } catch (CannotCompileException e) {
-            System.out.println("NOOOOOOO a ERRRRRRRRROR");
+        } catch (IOException | CannotCompileException e) {
             throw new RuntimeException(e);
         }
     }

@@ -22,16 +22,11 @@ public class LockManager {
     // If a lock doesn't exist it will be implizitly created.
     public synchronized Lock getLock(String name) {
         var lock = locks.get(name);
-        if (lock != null) {
-            System.out.println("LOCK '" + name + "' " + lock);
-            return lock;
-        }
-        System.out.println("NEW LOCK '" + name + "'");
+        if (lock != null) return lock;
 
         // We use ReentrantLock to allow recursion, which is required by the assignment.
         lock = new ReentrantLock();
         locks.put(name, lock);
-        System.out.println("LOCK '" + name + "' " + lock);
         return lock;
     }
 }

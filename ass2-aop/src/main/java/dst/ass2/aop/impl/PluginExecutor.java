@@ -25,7 +25,6 @@ public class PluginExecutor implements IPluginExecutor {
     ExecutorService pluginPool = Executors.newCachedThreadPool();
 
     public PluginExecutor() {
-        // FIXME: also lookup the directory once when starting the application
         try {
             watchService = FileSystems.getDefault().newWatchService();
         } catch (IOException e) {
@@ -35,6 +34,8 @@ public class PluginExecutor implements IPluginExecutor {
 
     @Override
     public void monitor(File dir) {
+        if (watchKeys.containsKey(dir)) return;
+
         WatchKey key = null;
         try {
             key = dir.toPath().register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
@@ -72,6 +73,8 @@ public class PluginExecutor implements IPluginExecutor {
 
     // This method runs in a seperate thread and if any changes are detected it will execute the plugins
     private void watchAndExecute() {
+        var lastLoaded = new HashMap<Path, Long>();
+
         while (true) {
             WatchKey key = null;
             try {
@@ -87,6 +90,14 @@ public class PluginExecutor implements IPluginExecutor {
                     System.out.println("Not a plugin: " + path);
                     continue;
                 }
+
+                // Sometimes two events are created for the same file so lets lookup the last modified and if we have
+                // loaded that one already.
+                if (lastLoaded.containsKey(path) && lastLoaded.get(path) <= path.toFile().lastModified())
+                    continue;
+
+                lastLoaded.put(path, path.toFile().lastModified());
+
 
                 System.out.println("Loading:" + path.getFileName());
 

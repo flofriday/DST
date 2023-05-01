@@ -34,6 +34,9 @@ public class PluginExecutor implements IPluginExecutor {
 
     @Override
     public void monitor(File dir) {
+        // FIXME: do I need to initialize all plugins in that folder here?
+        // What if the Executor hast even started yet?
+
         if (watchKeys.containsKey(dir)) return;
 
         WatchKey key = null;

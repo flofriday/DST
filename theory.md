@@ -90,3 +90,91 @@ needs to be run on all partitions and can therefore increase CPU utilization.
 
 MongoDB also supports sharding witg replication which can address all problems 
 by combining both solutions.
+
+
+## 2.4.1. Java Transaction API
+
+Consider the match method and how you would handle things different if you were 
+to implement it with pessimistic or optimistic locking.
+
+**Solution**
+
+
+
+
+## 2.4.2. Remoting Technologies
+
+Compare gRPC remoting and Web services. When would you use one technology, and 
+when the other? Is one of them strictly superior? How do these technologies 
+relate to other remoting technologies that you might know from other lectures 
+(e.g., Java RMI, or even socket programming)?
+
+**Solution**
+
+gRPC seams a lot simpler, as it is clearly designed for calling functions on 
+another machine. With Webservices you need to check, HTTP-Status codes, should
+verify the content header, the service itself should check your content accept 
+header. 
+
+For services that need to communicate, I would prefer gRPC simply because of 
+their simplicity. Compared to Java RMI it also has the big advantage that it 
+isn't limiting to a single language (well, to the JVM). 
+
+For public facing APIs I would prefer Web Services (REST-ish), because even 
+though it is not as simple, I know that the consumers can choose almost any 
+programming language since they all can perform requests and can parse JSON.
+
+If it is avoidable, I will avoid socket programming. From experience, it forces 
+you to think about many low level aspects that are often irrelevant to your 
+application. Maybe if latency is a extremely critical aspect of the application 
+and it is currently bottlenecked by the network.
+
+
+## 2.4.3. Class Loading
+
+Explain the concept of class loading in Java. What different types of class 
+loaders exist and how do they relate to each other? How is a class identified 
+in this process? What are the reasons for developers to write their own class 
+loaders?
+
+**Solution**
+
+Class loading is the process of loading compiled Java classes into the JVM. 
+
+There are three class loaders that come with Java:
+1) Bootstrap Class Loader: Loads internal classes like `java.lang*`.
+2) Extension Class Loader: Loads the JDK extensions.
+3) System Class Loader: Loads classes from the current classpath.
+
+Java class names are preserved in the *.jar and there fore the classloader can 
+identify all classes in the jar.
+
+There are multiple reasons why one might want to implement their own class 
+loader:
+- Modify existing classes (like we did with javaassist)
+- Creating classes dynamically 
+- Loading different versions of the same class, depending on its usecase.
+
+
+## 2.4.4. Weaving Times in AspectJ
+
+What happens during weaving in AOP? At what times can weaving happen in 
+AspectJ? Think about advantages and disadvantages of different weaving times.
+
+**Solution**
+
+Weaving is when the defined aspects get "woven" into their target classes.
+There are three ways this can happen, during compile time, post-comile time 
+and load time.
+
+Compile time weaving is the first choice if the source code for the target is 
+given and the aspect is known at compile time. Because the AspectJ compiler 
+can rewrite the target classes here, this leads to the best performance.
+
+Post compile time weaving also runs during compilation but here the source code 
+can be unknown and it is possible to weave directly into the java bytecode.
+This can be handy for libraries, when only a jar is provided.
+
+Load time weaving happens during runtime and can therefore modify already running
+programs which can be utialized for plugins.
+

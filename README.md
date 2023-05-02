@@ -22,6 +22,14 @@ In some examples you need to test the REST API and and I did that with [Insomnia
 Postman).
 You can import my config(v4) from `insomnia.yaml`.
 
+## Distributing
+
+I created the archive for uploading with the following script:
+
+```bash
+zip -r Assignment.zip -9 ass* docker pom.xml README.md
+```
+
 ## Build Java
 
 Each Maven module has a corresponding profile that contains the build config for the respective module.

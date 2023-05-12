@@ -99,6 +99,9 @@ to implement it with pessimistic or optimistic locking.
 
 **Solution**
 
+With optimistic locks the whole match would have been reexecuted with on 
+conflicts. While I implemented it with optimistic locks we should have 
+implemented it with pesimistcs to improve performance.
 
 
 

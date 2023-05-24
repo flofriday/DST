@@ -49,11 +49,11 @@ public class WorkloadMonitor implements IWorkloadMonitor {
                 var topic = "requests" + workQueue.substring(queue.indexOf("."));
                 channel.queueBind(queue, Constants.TOPIC_EXCHANGE, topic);
             }
-            //channel.queueBind(queue, Constants.TOPIC_EXCHANGE, "#");
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
-                var region = Region.valueOf(consumerTag.substring(consumerTag.indexOf(".")).toUpperCase());
+                var deliverYKey = delivery.getEnvelope().getRoutingKey();
+                var region = Region.valueOf(deliverYKey.substring(deliverYKey.indexOf(".") + 1).toUpperCase());
                 processMessage(message, region);
             };
             channel.basicConsume(queue, true, deliverCallback, consuerTag -> {

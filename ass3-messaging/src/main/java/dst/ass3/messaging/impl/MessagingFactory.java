@@ -9,8 +9,7 @@ public class MessagingFactory implements IMessagingFactory {
 
     @Override
     public IQueueManager createQueueManager() {
-        // TODO
-        return null;
+        return new QueueManager();
     }
 
     @Override

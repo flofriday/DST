@@ -46,7 +46,6 @@ public class RequestGateway implements IRequestGateway {
         try {
             connect();
             var routingKey = "requests." + request.getRegion().name().toLowerCase();
-            System.out.println("Key: " + routingKey);
             channel.basicPublish(Constants.TOPIC_EXCHANGE, routingKey, null, message.getBytes());
         } catch (IOException | TimeoutException e) {
             throw new RuntimeException(e);
@@ -55,10 +54,15 @@ public class RequestGateway implements IRequestGateway {
 
     @Override
     public void close() throws IOException {
+        if (connection == null) return;
+
         try {
             channel.close();
         } catch (TimeoutException ignored) {
         }
         connection.close();
+
+        channel = null;
+        connection = null;
     }
 }

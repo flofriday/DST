@@ -19,8 +19,7 @@ public class MessagingFactory implements IMessagingFactory {
 
     @Override
     public IWorkloadMonitor createWorkloadMonitor() {
-        // TODO
-        return null;
+        return new WorkloadMonitor();
     }
 
     @Override

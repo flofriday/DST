@@ -25,12 +25,12 @@ public class QueueManager implements IQueueManager {
             conn = connectionFactory.newConnection();
             try (var channel = conn.createChannel()) {
 
-                channel.exchangeDeclare(Constants.TOPIC_EXCHANGE, "direct");
+                channel.exchangeDeclare(Constants.TOPIC_EXCHANGE, "topic");
 
                 // Create the queues
                 for (var queue : Constants.WORK_QUEUES) {
                     channel.queueDeclare(queue, false, false, false, null);
-                    var routingKey = "request" + queue.substring(queue.indexOf("."));
+                    var routingKey = "requests" + queue.substring(queue.indexOf("."));
                     channel.queueBind(queue, Constants.TOPIC_EXCHANGE, routingKey);
                 }
             }

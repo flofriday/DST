@@ -14,8 +14,7 @@ public class MessagingFactory implements IMessagingFactory {
 
     @Override
     public IRequestGateway createRequestGateway() {
-        // TODO
-        return null;
+        return new RequestGateway();
     }
 
     @Override

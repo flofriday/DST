@@ -23,14 +23,13 @@ import java.util.concurrent.TimeoutException;
 
 public class WorkloadMonitor implements IWorkloadMonitor {
 
-
     private Client client;
     private Connection connection;
     private Channel channel;
     private String queue;
     private Map<Region, List<Long>> processintTimes = new HashMap<>();
 
-    private void connect() {
+    public WorkloadMonitor() {
         if (client != null) return;
 
         try {
@@ -45,15 +44,15 @@ public class WorkloadMonitor implements IWorkloadMonitor {
             connection = connectionFactory.newConnection();
             channel = connection.createChannel();
 
-            queue = channel.queueDeclare().getQueue();
+            queue = channel.queueDeclare("", false, false, false, null).getQueue();
             for (var workQueue : Constants.WORK_QUEUES) {
                 var topic = "requests" + workQueue.substring(queue.indexOf("."));
                 channel.queueBind(queue, Constants.TOPIC_EXCHANGE, topic);
             }
+            //channel.queueBind(queue, Constants.TOPIC_EXCHANGE, "#");
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
-                System.out.println(message);
                 var region = Region.valueOf(consumerTag.substring(consumerTag.indexOf(".")).toUpperCase());
                 processMessage(message, region);
             };
@@ -88,7 +87,6 @@ public class WorkloadMonitor implements IWorkloadMonitor {
 
     @Override
     public Map<Region, Long> getRequestCount() {
-        connect();
 
         var requestCounts = new HashMap<Region, Long>();
         for (var queue : client.getQueues()) {
@@ -104,7 +102,6 @@ public class WorkloadMonitor implements IWorkloadMonitor {
 
     @Override
     public Map<Region, Long> getWorkerCount() {
-        connect();
 
         var requestCounts = new HashMap<Region, Long>();
         for (var queue : client.getQueues()) {
@@ -120,7 +117,6 @@ public class WorkloadMonitor implements IWorkloadMonitor {
 
     @Override
     synchronized public Map<Region, Double> getAverageProcessingTime() {
-        connect();
 
         var map = new HashMap<Region, Double>();
         for (var pair : processintTimes.entrySet()) {
@@ -145,6 +141,5 @@ public class WorkloadMonitor implements IWorkloadMonitor {
 
         connection.close();
         connection = null;
-
     }
 }

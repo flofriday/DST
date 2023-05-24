@@ -45,6 +45,7 @@ public class QueueManager implements IQueueManager {
     public void tearDown() {
         try (var channel = conn.createChannel()) {
             channel.exchangeDelete(Constants.TOPIC_EXCHANGE);
+            channel.exchangeDelete("dst.custom.exchange");
 
             for (var queue : Constants.WORK_QUEUES) {
                 channel.queueDelete(queue);

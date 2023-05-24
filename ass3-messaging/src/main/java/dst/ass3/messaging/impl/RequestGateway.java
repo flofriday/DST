@@ -16,6 +16,7 @@ public class RequestGateway implements IRequestGateway {
 
     private Connection connection;
     private Channel channel;
+    private String queue;
 
     private void connect() throws IOException, TimeoutException {
 
@@ -45,8 +46,8 @@ public class RequestGateway implements IRequestGateway {
         // Send to the exchnage
         try {
             connect();
-            var routingKey = "requests." + request.getRegion().name().toLowerCase();
-            channel.basicPublish(Constants.TOPIC_EXCHANGE, routingKey, null, message.getBytes());
+            var topic = "topic." + request.getRegion().name().toLowerCase();
+            channel.basicPublish("dst.custom.exchange", topic, null, message.getBytes());
         } catch (IOException | TimeoutException e) {
             throw new RuntimeException(e);
         }

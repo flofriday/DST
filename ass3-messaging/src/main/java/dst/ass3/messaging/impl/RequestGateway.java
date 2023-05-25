@@ -16,7 +16,6 @@ public class RequestGateway implements IRequestGateway {
 
     private Connection connection;
     private Channel channel;
-    private String queue;
 
     private void connect() throws IOException, TimeoutException {
 

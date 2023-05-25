@@ -30,7 +30,7 @@ class Driver:
 
 
 def fetch_drivers(region) -> list[Driver]:
-    r = redis.Redis()
+    r = redis.Redis(host="redis")
     all = r.hgetall("drivers:" + region)
     drivers = []
     for k, v in all.items():
@@ -73,7 +73,7 @@ def simulate_work(region):
 
 
 def remove_driver(driver: Driver, region: str) -> int:
-    r = redis.Redis()
+    r = redis.Redis(host="redis")
     return r.hdel("drivers:" + region, str(driver.id))
 
 
@@ -122,7 +122,7 @@ def main():
     region = sys.argv[1]
 
     connection = pika.BlockingConnection(pika.ConnectionParameters(
-        'localhost',
+        'rabbit',
         5672,
         '/',
         pika.PlainCredentials('dst', 'dst')))

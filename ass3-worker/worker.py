@@ -133,7 +133,7 @@ def main():
                           on_message_callback=lambda c, m, p, b: callback(c, m, p, b, region),
                           auto_ack=True)
 
-    def term_handler():
+    def term_handler(_signo, _stack_frame):
         print("Terminiated with SIGTERM")
         sys.exit(0)
 

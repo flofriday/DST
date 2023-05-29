@@ -4,14 +4,12 @@ import dst.ass3.elastic.IContainerService;
 import dst.ass3.elastic.IElasticityController;
 import dst.ass3.elastic.IElasticityFactory;
 import dst.ass3.messaging.IWorkloadMonitor;
-import dst.ass3.messaging.impl.MessagingFactory;
 
 public class ElasticityFactory implements IElasticityFactory {
 
     @Override
     public IContainerService createContainerService() {
-        // TODO
-        return null;
+        return new ContainerService();
     }
 
     @Override

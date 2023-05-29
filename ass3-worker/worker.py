@@ -128,7 +128,7 @@ def main():
         pika.PlainCredentials('dst', 'dst')))
     channel = connection.channel()
     queue = "dst." + region
-    channel.queue_declare(queue)
+    channel.queue_declare(queue, durable=True)
     channel.basic_consume(queue=queue,
                           on_message_callback=lambda c, m, p, b: callback(c, m, p, b, region),
                           auto_ack=True)

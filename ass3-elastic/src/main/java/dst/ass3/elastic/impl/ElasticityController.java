@@ -42,12 +42,13 @@ public class ElasticityController implements IElasticityController {
         double linearWaitingTime = info.requestCount * info.avgTime;
         double exp = linearWaitingTime / optimalWorkers;
 
-        // FIXME: If that is correct than we only need to return an enum
+        // NOTE: We only include the threshold when deciding if we should scale at all but when we do the actual scaling
+        // we don't include it as we want to get as close as possible to the goal.
         if (exp > info.maxWaittime * (1 + scaleOutThreshold)) {
-            while ((linearWaitingTime / optimalWorkers) > (info.maxWaittime * (1 + scaleOutThreshold)))
+            while ((linearWaitingTime / optimalWorkers) > info.maxWaittime)
                 optimalWorkers++;
         } else if (exp < info.maxWaittime * (1 - scaleDownThreshold)) {
-            while ((linearWaitingTime / optimalWorkers) < (info.maxWaittime * (1 - scaleDownThreshold)))
+            while ((linearWaitingTime / optimalWorkers) < info.maxWaittime)
                 optimalWorkers--;
         }
 

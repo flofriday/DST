@@ -16,6 +16,7 @@ public class EventSourceFunction implements IEventSourceFunction {
     private boolean isRunning = false;
     private EventSubscriber eventSubscriber;
     private EventPublisher eventPublisher;
+    private RuntimeContext runtimeContext;
 
     @Override
     public void open(Configuration parameters) throws Exception {
@@ -36,7 +37,7 @@ public class EventSourceFunction implements IEventSourceFunction {
 
     @Override
     public RuntimeContext getRuntimeContext() {
-        return null;
+        return runtimeContext;
     }
 
     @Override
@@ -46,7 +47,7 @@ public class EventSourceFunction implements IEventSourceFunction {
 
     @Override
     public void setRuntimeContext(RuntimeContext runtimeContext) {
-
+        this.runtimeContext = runtimeContext;
     }
 
     @Override
@@ -54,9 +55,11 @@ public class EventSourceFunction implements IEventSourceFunction {
         isRunning = true;
         while (isRunning) {
             var eventInfo = eventSubscriber.receive();
-            if (eventInfo == null)
-                continue;
-            ctx.collect(eventInfo);
+            if (eventInfo == null) {
+                isRunning = false;
+                break;
+            }
+            ctx.collectWithTimestamp(eventInfo, eventInfo.getTimestamp());
         }
     }
 

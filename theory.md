@@ -192,6 +192,23 @@ the differences? When is it useful to use JMS?
 
 **Solution**
 
+Differences include:
+- JMS only defines an API, but leaves the implementation open, while AMQP 
+defines the exact layout of how bytes are sent over the wire. This also means 
+that the same implementation might be needed to be used on server on client while
+AMQP doesn't have such requirements.
+- AMQP doesn't have a standard API, so switching clients can be quite expensive.
+- JMS is quite a bit simpler as it only supports point-to-oint and 
+publish-subscribe modes. AMQP on the other hand has exchanges, different modes 
+like, `fanout`, `direct` or `topic`.
+- AMQP can be used to implement the JMS API, as there are quite a few JMS clients
+https://www.rabbitmq.com/jms-client.html.
+
+In general, both technologies can be used to implement a message queue. 
+
+I cannot think of a reason to use JMS over AMQP, the API might be simpler but
+since we have used AMQP in the lecture I haven't had any problems with the API.
+
 ## 3.4.2. Messaging Patterns
 
 Describe the different messaging patterns that can be implemented with RabbitMQ.
@@ -202,6 +219,8 @@ Also, describe for each pattern:
 
 **Solution**
 
+
+
 ## 3.4.3. Container vs. Virtual Machines
 
 Explain the differences between container-based virtualization (in particular
@@ -209,6 +228,21 @@ Docker) and Virtual Machines. What are the benefits of container over VMs and
 vice versa?
 
 **Solution**
+
+Containers are implemented with kernel-level isolation (with namespaces). 
+That means that the host kernel is reused for the containers, but can isolate 
+the processes into thinking that they run on their own machine.
+
+Overall this results in less overhead as many resources can be shared, and 
+the isolation can be turned of where needed, for example for servers it can 
+be quite handy to allow the container to run on the same network.
+
+Containers, however are only native on Linux, other operating systems need to 
+virtualize at least one Linux kernel to run a container.
+
+VMs provide better isolation, which comes with a greater performance impact. 
+For example, trying another operating system with a different kernel is not 
+possible in containers.
 
 ## 3.4.4. Scalability of Stateful Stream Processing Operators
 

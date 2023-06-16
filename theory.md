@@ -219,6 +219,55 @@ Also, describe for each pattern:
 
 **Solution**
 
+**Work queue**
+
+A single queue is used to publish and receive messages. On both ends multpile 
+producers and consumers are allowed however a message will only be send to 
+a single consumer. This might be useful for long running tasks like OCR on 
+documents.
+
+This could also be implemented with JMS. 
+
+**Publish Subscribe**
+
+A producer sends messages and multiple receiver can subscribe to that producer, 
+where each consumer has their own queue. In RabbitMQ we would implement that
+with an exchange and the `fanout` mode. A possible usecase is a messaging app 
+where we the user need to subscribe to a chat to receive its messages.
+
+In the past I have ~misused~ creatively utilized a Postgres Database to archive
+the same but that approach greatly limits the available connections.
+
+**Routing**
+
+This is conceptually similar to publish subscribe but each subscriber can set
+to which type of messages they want to listen to. In RabbitMQ we would implement
+that with the `direct` mode. This might be useful in a monitoring environment 
+where muliple logger are subscribed to error messages. Some logger might want to 
+listen to all errors to write them to the log file and others might only be 
+interested in high-severity failures, like a call robot to wake up the 
+on-call developer.
+
+In general most of these patterns can also be created in other message brokers 
+that implement the AMQP like Apache Qpid (the original AMQP broker 
+implementation).
+
+**Topic**
+
+Topic is even more advanced than routing and the queues can run a matching 
+on the topic key. For example the keys of queues are like `eu.austria.vienna`, 
+`eu.austria.linz`, `us.california.berkley` than just with routing it is 
+possible to just get a simple city but sometimes it might be handy to get all 
+requests from a country and that would be possible for austria with 
+`eu.austria.`.
+
+Even though it would be less reliable, more work and a lot more maintanance we 
+__could__ roll our own solution with grpc and a lot of engineering. First the 
+cosumer would need to register at the producer to get discoverd. Next the 
+producer would send all messages to all consumers which would first filter them
+according to their match algorithms and then store them themself in a queue.
+
+
 
 
 ## 3.4.3. Container vs. Virtual Machines
@@ -253,3 +302,7 @@ aggregations, windows or other stateful operators affect the ability for
 parallelization? What challenges arise when scaling out such operators?
 
 **Solution**
+
+Key based aggregation first needs to group the data by key. Than each key can 
+only be processed on a single node to verify correctness.
+
